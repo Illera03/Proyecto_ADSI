@@ -19,8 +19,8 @@ class OMDBManager:
 
 # Ejemplo de uso algo
 if __name__ == "__main__":
-    omdb = OMDBManager("6245e782")
-    movie = omdb.search_movie("Harry")
+    omdb = OMDBManager("TU_API_KEY")
+    movie = omdb.search_movie("The Matrix")
     
     if movie and movie['Response'] == 'True':
         print(f"Título: {movie['Title']}")
