@@ -1,4 +1,4 @@
-
+# https://www.omdbapi.com/?apikey=2d79f0e&
 
 # Proyecto ADSI
 
@@ -6,10 +6,10 @@ Este proyecto es una aplicación de escritorio para la gestión de un videoclub.
 
 ## Estructura del Proyecto
 
-
 ## Descripción de Componentes
 
 - **/src/**: Carpeta que contiene todos los archivos fuente de la aplicación.
+
   - **main.py**: El punto de entrada de la aplicación. Aquí se inicializa y ejecuta la interfaz gráfica.
   - **db_manager.py**: Módulo encargado de establecer la conexión con la base de datos SQLite y gestionar las operaciones de creación y actualización de tablas.
   - **user_management.py**: Módulo que gestiona el registro de nuevos usuarios y su autenticación.
@@ -21,5 +21,3 @@ Este proyecto es una aplicación de escritorio para la gestión de un videoclub.
 
 - **/data/**: Carpeta que almacena los archivos de la base de datos.
   - **video_club.db**: Archivo de base de datos SQLite donde se almacenan los datos de usuarios, películas y reseñas.
-
-
