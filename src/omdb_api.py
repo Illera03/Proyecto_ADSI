@@ -17,7 +17,7 @@ class OMDBManager:
         else:
             return None
 
-# Ejemplo de uso
+# Ejemplo de uso algo
 if __name__ == "__main__":
     omdb = OMDBManager("6245e782")
     movie = omdb.search_movie("Harry")
