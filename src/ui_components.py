@@ -35,7 +35,11 @@ class App:
         username = self.username_entry.get()
         password = self.password_entry.get()
         email = self.email_entry.get()
-        self.user_manager.register_user(username, password, email)
+        reg = self.user_manager.register_user(username, password, email)
+        if reg:
+            messagebox.showinfo("Éxito", "Registro exitoso")
+        else:
+            messagebox.showerror("Error", "Registro incorrecto")
 
     def login_user(self):
         username = self.username_entry.get()

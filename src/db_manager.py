@@ -73,12 +73,3 @@ def create_tables(conn):
     
     conn.commit()
 
-def main():
-    database = "data/video_club.db"
-    conn = create_connection(database)
-    if conn is not None:
-        create_tables(conn)
-        conn.close()
-
-if __name__ == '__main__':
-    main()
