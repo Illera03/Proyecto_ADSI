@@ -5,29 +5,31 @@ from db_manager import create_connection
 
 class UserManager:
     def __init__(self, db_file):
+        self.db_file = db_file
         self.connection = create_connection(db_file)
 
-    def register_user(self, username, password, email):
+    def register_user(self, username, password, email, role="user"):
         """Registrar un nuevo usuario en la base de datos."""
         cursor = self.connection.cursor()
         try:
-            cursor.execute('''
-                INSERT INTO Usuarios (username, password, email)
-                VALUES (?, ?, ?)
-            ''', (username, password, email))
+            cursor.execute("INSERT INTO Usuarios (username, password, email, role) VALUES (?, ?, ?, ?)", (username, password, email, role))
             self.connection.commit()
             return True
         except sqlite3.IntegrityError:
             return False
 
     def authenticate_user(self, username, password):
-        """Autenticar un usuario existente."""
-        cursor = self.connection.cursor()
-        cursor.execute('''
-            SELECT * FROM Usuarios WHERE username = ? AND password = ?
-        ''', (username, password))
+        """Autenticar un usuario en la base de datos."""
+        conn = create_connection(self.db_file)
+        cursor = conn.cursor()
+        cursor.execute("SELECT username, role FROM Usuarios WHERE username = ? AND password = ?", (username, password))
         user = cursor.fetchone()
-        return user is not None
+        conn.close()
+        
+        if user:
+            return {"username": user[0], "role": user[1]}
+        else:
+            return None
 
     def close_connection(self):
         """Cerrar la conexión a la base de datos."""
