@@ -37,19 +37,19 @@ class UserManager:
             self.connection.close()
 
 # Ejemplo de uso
-if __name__ == "__main__":
-    user_manager = UserManager("data/video_club.db")
-    # Registra un nuevo usuario
-    success = user_manager.register_user("nuevo_usuario", "contraseña", "email@example.com")
-    if success:
-        print("Usuario registrado exitosamente.")
-    else:
-        print("Error al registrar el usuario: usuario o correo ya existen.")
+# if __name__ == "__main__":
+#     user_manager = UserManager("data/video_club.db")
+#     # Registra un nuevo usuario
+#     success = user_manager.register_user("nuevo_usuario", "contraseña", "email@example.com")
+#     if success:
+#         print("Usuario registrado exitosamente.")
+#     else:
+#         print("Error al registrar el usuario: usuario o correo ya existen.")
     
-    # Autenticación de un usuario
-    if user_manager.authenticate_user("nuevo_usuario", "contraseña"):
-        print("Usuario autenticado.")
-    else:
-        print("Autenticación fallida.")
+#     # Autenticación de un usuario
+#     if user_manager.authenticate_user("nuevo_usuario", "contraseña"):
+#         print("Usuario autenticado.")
+#     else:
+#         print("Autenticación fallida.")
     
-    user_manager.close_connection()
+#     user_manager.close_connection()

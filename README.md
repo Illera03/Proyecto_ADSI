@@ -1,8 +1,10 @@
-# https://www.omdbapi.com/?apikey=2d79f0e&
+https://www.omdbapi.com/?apikey=2d79f0e&
 
 # Proyecto ADSI
 
 Este proyecto es una aplicación de escritorio para la gestión de un videoclub. A continuación se detalla la estructura del proyecto y la función de cada uno de sus componentes.
+
+Tecnologías utilizadas: Python + Tkinter y SQLite
 
 ## Estructura del Proyecto
 
@@ -21,3 +23,10 @@ Este proyecto es una aplicación de escritorio para la gestión de un videoclub.
 
 - **/data/**: Carpeta que almacena los archivos de la base de datos.
   - **video_club.db**: Archivo de base de datos SQLite donde se almacenan los datos de usuarios, películas y reseñas.
+  
+## Asignación de funcionalidades
+
+- ### Gestión de usarios: Jorge Illera
+- ### Alquiler de películas: xxx
+- ### Puntuación de películas: xxx
+- ### Incorporación de nuevas películas: xxx
