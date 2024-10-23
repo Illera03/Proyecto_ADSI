@@ -162,11 +162,37 @@ class App:
             messagebox.showerror("Error", "No se pudo actualizar la información.")
     
     def user_request_movies(self):
+        """Función para solicitar una película"""
         self.clear_frame()
-        tk.Label(self.container, text="Nombre de la pelcula").pack()
+
+        # Etiqueta y campo de entrada para la película solicitada
+        tk.Label(self.container, text="Introduce el nombre de la película:").pack(pady=10)
         film_entry = tk.Entry(self.container)
         film_entry.pack()
+
+        # Botón para solicitar la película
+        tk.Button(self.container, text="Solicitar", command=lambda: self.request_movie_from_api(film_entry.get())).pack(pady=10)
+
+        # Botón para volver al menú de usuario
         tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
+
+    def request_movie_from_api(self, movie_title):
+        """Función para buscar la película en OMDb API y registrar la solicitud"""
+        if not movie_title:
+            messagebox.showwarning("Error", "Debes introducir el nombre de una película")
+            return
+
+        # Llamar a la función para buscar la película en OMDb
+        movie_data = self.user_manager.search_movie_omdb(movie_title)
+
+        if movie_data:
+            # Si se encuentra la película, se inserta en la base de datos
+            self.user_manager.create_movie_request(self.logged_in_user, movie_data['Title'])
+
+            # Mostrar mensaje de éxito
+            messagebox.showinfo("Éxito", f"Película '{movie_data['Title']}' solicitada correctamente.")
+        else:
+            messagebox.showerror("Error", "No se encontró la película en la base de datos OMDb.")
         
 
     def logout_user(self):

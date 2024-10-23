@@ -1,6 +1,7 @@
 # user_management.py
 import sqlite3
 from db_manager import create_connection  # Asumiendo que existe en otro lugar
+import requests
 
 class UserManager:
     def __init__(self, db_file):
@@ -48,6 +49,13 @@ class UserManager:
         if user:
             return {'username': user[0], 'email': user[1]}
         return None
+    
+    def get_user_id(self, username):
+        """Obtiene el user_id a partir del nombre de usuario."""
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT user_id FROM Usuarios WHERE username = ?", (username,))
+        result = cursor.fetchone()
+        return result[0] if result else None
 
     def update_user_info(self, current_username, new_username, new_email, new_password=None):
         """Actualizar la información del usuario"""
@@ -60,6 +68,34 @@ class UserManager:
                            (new_username, new_email, current_username))
         self.connection.commit()
         return True
+    
+    def create_movie_request(self, username, movie_title):
+        """Crea una solicitud de película en la base de datos."""
+        cursor = self.connection.cursor()
+
+        user_id = self.get_user_id(username)
+
+        cursor.execute("""
+            INSERT INTO Peticiones (user_id, movie_title)
+            VALUES (?, ?)
+        """, (user_id, movie_title))
+
+        self.connection.commit()
+    
+    def search_movie_omdb(self, movie_title):
+        """Buscar la película en la API de OMDb"""
+        url = f"http://www.omdbapi.com/?t={movie_title}&apikey=2d79f0e"
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data['Response'] == 'True':
+                return data  # Devolvemos los datos de la película
+            else:
+                return None  # No se encontró la película
+        else:
+            messagebox.showerror("Error", "No se pudo conectar con OMDb API.")
+            return None
 
     def close_connection(self):
         """Cerrar la conexión a la base de datos."""
