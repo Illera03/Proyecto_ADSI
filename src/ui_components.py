@@ -99,6 +99,7 @@ class App:
             tk.Button(self.container, text="Alquilar películas", command=self.user_rent_movies).pack(pady=10)
             tk.Button(self.container, text="Ver mis alquileres", command=self.user_view_rentals).pack(pady=10)
             tk.Button(self.container, text="Actualizar datos personales", command=self.user_update_info).pack(pady=10)
+            tk.Button(self.container, text="Solicitar película", command=self.user_request_movies).pack(pady=10)
 
         # Botón para cerrar sesión
         tk.Button(self.container, text="Cerrar sesión", command=self.logout_user).pack(pady=10)
@@ -160,6 +161,12 @@ class App:
         else:
             messagebox.showerror("Error", "No se pudo actualizar la información.")
     
+    def user_request_movies(self):
+        self.clear_frame()
+        tk.Label(self.container, text="Nombre de la pelcula").pack()
+        film_entry = tk.Entry(self.container)
+        film_entry.pack()
+        tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
         
 
     def logout_user(self):

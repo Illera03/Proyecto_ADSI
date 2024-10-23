@@ -7,4 +7,6 @@ class RequestManager:
         self.db_file = db_file
         self.connection = create_connection(db_file)
 
-   # def create_request():
+    def create_request():
+        nombre = input("Nombre: ")
+        
