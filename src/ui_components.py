@@ -179,7 +179,7 @@ class App:
             self.clear_frame()
             tk.Label(self.container, text="Películas disponibles").pack(pady=10)
 
-            movies = self.user_manager.get_all_movies()  # Supongamos que esta función devuelve una lista de diccionarios con las películas
+            movies = self.user_manager.get_all_movies() # Supongamos que esta función devuelve una lista de diccionarios con las películas
 
 
             for movie in movies:
@@ -188,6 +188,19 @@ class App:
 
             tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
 
+    def get_all_movies(self):
+        """Obtener todas las películas de la base de datos"""
+        cursor = self.user_manager.connection.cursor()
+        cursor.execute("SELECT id, title, year FROM Movies")
+        movies = cursor.fetchall()
+
+        movie_list = []
+        for movie in movies:
+            movie_list.append({'id': movie[0], 'title': movie[1], 'year': movie[2]})
+
+        return movie_list
+        
+    
 if __name__ == "__main__":
     root = tk.Tk()
     app = App(root)
