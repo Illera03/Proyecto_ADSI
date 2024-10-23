@@ -98,6 +98,7 @@ class App:
         if self.logged_in_role == "user":
             tk.Button(self.container, text="Alquilar películas", command=self.user_rent_movies).pack(pady=10)
             tk.Button(self.container, text="Ver mis alquileres", command=self.user_view_rentals).pack(pady=10)
+            tk.Button(self.container, text="Actualizar datos personales", command=self.user_update_info).pack(pady=10)
 
         # Botón para cerrar sesión
         tk.Button(self.container, text="Cerrar sesión", command=self.logout_user).pack(pady=10)
@@ -117,6 +118,49 @@ class App:
     def user_view_rentals(self):
         """Función del usuario para ver sus alquileres"""
         messagebox.showinfo("Usuario", "Función para ver alquileres")
+        
+    def user_update_info(self):
+        """Función del usuario para actualizar su información personal"""
+        self.clear_frame()
+
+        # Obtener la información actual del usuario desde la base de datos
+        user_info = self.user_manager.get_user_info(self.logged_in_user)
+
+        # Mostrar campos con los datos actuales
+        tk.Label(self.container, text="Actualizar información personal").pack(pady=10)
+
+        tk.Label(self.container, text="Nombre de usuario").pack()
+        username_entry = tk.Entry(self.container)
+        username_entry.insert(0, user_info['username'])  # Mostrar el nombre actual
+        username_entry.pack()
+
+        tk.Label(self.container, text="Correo electrónico").pack()
+        email_entry = tk.Entry(self.container)
+        email_entry.insert(0, user_info['email'])  # Mostrar el email actual
+        email_entry.pack()
+
+        tk.Label(self.container, text="Nueva contraseña (opcional)").pack()
+        password_entry = tk.Entry(self.container, show="*")  # Campo de nueva contraseña (opcional)
+        password_entry.pack()
+
+        # Botón para guardar los cambios
+        tk.Button(self.container, text="Actualizar", command=lambda: self.update_user_info(username_entry.get(), email_entry.get(), password_entry.get())).pack(pady=10)
+        tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
+
+    def update_user_info(self, username, email, password):
+        """Actualizar la información del usuario en la base de datos"""
+        if password:
+            success = self.user_manager.update_user_info(self.logged_in_user, username, email, password)
+        else:
+            success = self.user_manager.update_user_info(self.logged_in_user, username, email)
+
+        if success:
+            messagebox.showinfo("Éxito", "Datos actualizados correctamente.")
+            self.show_user_menu()
+        else:
+            messagebox.showerror("Error", "No se pudo actualizar la información.")
+    
+        
 
     def logout_user(self):
         """Cerrar sesión"""
