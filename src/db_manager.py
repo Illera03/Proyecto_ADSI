@@ -32,7 +32,7 @@ def create_tables(conn):
         available_copies INTEGER DEFAULT 0
     );
     ''')
-    
+
     # Tabla Alquileres
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Alquileres (
@@ -71,6 +71,20 @@ def create_tables(conn):
         FOREIGN KEY (user_id) REFERENCES Usuarios (user_id)
     );
     ''')
+
+    cursor.execute('''
+                   TRUNCATE TABLE Películas;
+                      ''')
     
+    cursor.execute('''
+                   INSERT INTO Películas (title, genre,release_year, director,available_copies) VALUES
+                   ("Harry","Accion",2012,"sfgdf", 5),
+                   ("Harry2","Accion",2012,"sfgdf", 5),
+                   ("Harry3","Accion",2012,"sfgdf", 5),
+                   ("Harry4","Accion",2012,"sfgdf", 5);
+                   ''')
+    
+
+
     conn.commit()
 
