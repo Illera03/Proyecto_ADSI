@@ -73,7 +73,7 @@ def create_tables(conn):
     ''')
 
     cursor.execute('''
-                   TRUNCATE TABLE Películas;
+                   DELETE FROM Películas;
                       ''')
     
     cursor.execute('''
