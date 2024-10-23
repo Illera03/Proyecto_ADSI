@@ -72,9 +72,9 @@ def create_tables(conn):
     );
     ''')
 
-  #  cursor.execute('''
-    #               TRUNCATE TABLE Películas;
-       #               ''')
+    cursor.execute('''
+                   DELETE FROM Películas;
+                      ''')
     
     cursor.execute('''
                    INSERT INTO Películas (title, genre,release_year, director,available_copies) VALUES
