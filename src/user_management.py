@@ -2,6 +2,9 @@
 import sqlite3
 from db_manager import create_connection  # Asumiendo que existe en otro lugar
 import requests
+import tkinter as tk
+from tkinter import messagebox
+
 
 class UserManager:
     def __init__(self, db_file):
@@ -20,9 +23,18 @@ class UserManager:
     def register_user(self, username, password, email, role="user"):
         """Registrar un nuevo usuario en la base de datos."""
         cursor = self.connection.cursor()
+        
+        # Si el usuario es 'admin', le asignamos el rol de administrador
+        if username.lower() == "_admin_":
+            role = "admin"
         try:
-            cursor.execute("INSERT INTO Usuarios (username, password, email, role) VALUES (?, ?, ?, ?)", 
-                           (username, password, email, role))
+            # Añadimos la columna `status` con valor inicial "pendiente" para usuarios no administradores
+            if role == "admin":
+                cursor.execute("INSERT INTO Usuarios (username, password, email, role, status) VALUES (?, ?, ?, ?, 'aceptado')", 
+                            (username, password, email, role))
+            else:
+                cursor.execute("INSERT INTO Usuarios (username, password, email, role, status) VALUES (?, ?, ?, ?, 'pendiente')", 
+                            (username, password, email, role))
             self.connection.commit()
             return True
         except sqlite3.IntegrityError:
@@ -31,14 +43,20 @@ class UserManager:
     def authenticate_user(self, username, password):
         """Autenticar un usuario en la base de datos."""
         cursor = self.connection.cursor()
-        cursor.execute("SELECT username, role FROM Usuarios WHERE username = ? AND password = ?", 
-                       (username, password))
-        user = cursor.fetchone()
+
+        # Verificar si el usuario existe con las credenciales dadas
+        cursor.execute("SELECT username, role, status FROM Usuarios WHERE username = ? AND password = ?", 
+                    (username, password))
         
-        if user:
-            return {"username": user[0], "role": user[1]}
+        user = cursor.fetchone()  # Devuelve una tupla con el usuario, rol y estado
+
+        if user:  # Si el usuario fue encontrado
+            if user[2] == "aceptado":  # Si su estado es 'aceptado'
+                return {"username": user[0], "role": user[1]}
+            else:
+                return "pendiente"  # Si no está aceptado aún
         else:
-            return None
+            return None  # Si no se encontraron credenciales válidas
 
     def get_user_info(self, username):
         """Obtener la información actual del usuario desde la base de datos"""
@@ -96,11 +114,44 @@ class UserManager:
         else:
             messagebox.showerror("Error", "No se pudo conectar con OMDb API.")
             return None
+        
+    # Métodos del administrador
 
     def close_connection(self):
         """Cerrar la conexión a la base de datos."""
         if self.connection:
             self.connection.close()
+    def get_pending_users(self):
+        """Obtener una lista de usuarios pendientes de aceptación."""
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT username, email FROM Usuarios WHERE status = 'pendiente'")
+        return cursor.fetchall()
+
+    def accept_user(self, username):
+        """Aceptar la solicitud de registro de un usuario."""
+        cursor = self.connection.cursor()
+        cursor.execute("UPDATE Usuarios SET status = 'aceptado' WHERE username = ?", (username,))
+        self.connection.commit()
+
+    def reject_user(self, username):
+        """Rechazar la solicitud de registro de un usuario."""
+        cursor = self.connection.cursor()
+        cursor.execute("DELETE FROM Usuarios WHERE username = ?", (username,))
+        self.connection.commit()
+        
+    def delete_user(self, username):
+        """Eliminar un usuario de la base de datos"""
+        cursor = self.connection.cursor()
+        cursor.execute("DELETE FROM Usuarios WHERE username = ?", (username,))
+        self.connection.commit()
+        
+    def get_all_users(self):
+        """Obtener todos los usuarios de la base de datos"""
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT username, email FROM Usuarios")
+        return cursor.fetchall() 
+
+
 
 
 # Ejemplo de uso

@@ -26,7 +26,21 @@ Tecnologías utilizadas: Python + Tkinter y SQLite
   
 ## Asignación de funcionalidades
 
-- ### Gestión de usarios: Jorge Illera
-- ### Alquiler de películas: xxx
-- ### Puntuación de películas: xxx
-- ### Incorporación de nuevas películas: xxx
+-  Gestión de usarios: Jorge Illera
+-  Alquiler de películas: xxx
+-  Puntuación de películas: xxx
+- Incorporación de nuevas películas: xxx
+
+# Funcionalidades
+
+## Gestión de Usuarios:
+La funcionalidad de gestión de usuarios permitirá a los usuarios registrarse, iniciar sesión, y actualizar sus datos personales. Por otro lado, los administradores podrán aceptar las solicitudes de registro, eliminar cuentas de usuario y modificar los datos personales de cualquier cuenta.
+
+## Alquiler de Películas:
+Esta funcionalidad incluirá la gestión del catálogo virtual de películas, y el seguimiento del historial de alquileres. Los usuarios podrán buscar y alquilar películas directamente en la plataforma virtual. Una vez alquiladas, las películas estarán disponibles para ser vistas en la plataforma durante un período de 48 horas.
+
+## Puntuación de Películas:
+Los usuarios tendrán la opción de puntuar y reseñar las películas que han alquilado. Esta funcionalidad permitirá ver las puntuaciones promedio de las películas, ordenar el catálogo por valoración y visualizar los comentarios de otros usuarios. Además, los usuarios podrán modificar sus puntuaciones y comentarios en cualquier momento.
+
+## Incorporación de Nuevas Películas:
+Esta funcionalidad permitirá a los usuarios solicitar la incorporación de nuevas películas al catálogo del Video Club a través de un catálogo más amplio disponible mediante una API externa. Los usuarios podrán explorar este catálogo ampliado y hacer peticiones de las películas que les interesen. Los administradores tendrán la capacidad de validar o rechazar dichas peticiones. En caso de validación, los administradores podrán añadir las películas solicitadas al catálogo.

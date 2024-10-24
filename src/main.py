@@ -13,6 +13,7 @@ def db():
 if __name__ == '__main__': # __name__ es una variable especial que se asigna el valor "__main__" si el script se ejecuta directamente
     db()
     root = tk.Tk()
+    root.geometry("800x700")  # Establecer tamaño de la ventana
     app = App(root)
     root.mainloop()
 

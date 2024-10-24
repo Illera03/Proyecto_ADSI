@@ -17,7 +17,7 @@ def create_tables(conn):
         password TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        role TEXT NOT NULL DEFAULT 'user' 
+        role TEXT NOT NULL DEFAULT 'user'
     );
     ''')
     
@@ -83,8 +83,5 @@ def create_tables(conn):
                    ("Harry3","Accion",2012,"sfgdf", 5),
                    ("Harry4","Accion",2012,"sfgdf", 5);
                    ''')
-    
-
-
     conn.commit()
 
