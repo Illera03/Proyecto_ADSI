@@ -29,10 +29,9 @@ Tecnologías utilizadas: Python + Tkinter y SQLite
 -  Gestión de usarios: Jorge Illera
 -  Alquiler de películas: xxx
 -  Puntuación de películas: xxx
-- Incorporación de nuevas películas: xxx
+-  Incorporación de nuevas películas: xxx
 
 # Funcionalidades
-
 ## Gestión de Usuarios:
 La funcionalidad de gestión de usuarios permitirá a los usuarios registrarse, iniciar sesión, y actualizar sus datos personales. Por otro lado, los administradores podrán aceptar las solicitudes de registro, eliminar cuentas de usuario y modificar los datos personales de cualquier cuenta.
 
@@ -44,3 +43,14 @@ Los usuarios tendrán la opción de puntuar y reseñar las películas que han al
 
 ## Incorporación de Nuevas Películas:
 Esta funcionalidad permitirá a los usuarios solicitar la incorporación de nuevas películas al catálogo del Video Club a través de un catálogo más amplio disponible mediante una API externa. Los usuarios podrán explorar este catálogo ampliado y hacer peticiones de las películas que les interesen. Los administradores tendrán la capacidad de validar o rechazar dichas peticiones. En caso de validación, los administradores podrán añadir las películas solicitadas al catálogo.
+
+
+## NOTAS:
+### Administradores:
+Para registrar a un administrador, se debe introducir el nombre de usuario "\_admin\_", el email y la contraseña son indiferentes.
+
+Existe un administrador ya creado: 
+
+__username__: \_admin\_
+
+__password__: test

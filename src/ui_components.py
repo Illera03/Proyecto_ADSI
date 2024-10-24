@@ -277,11 +277,11 @@ class App:
                 user_label.pack(pady=5)
 
                 # Botón para aceptar el usuario
-                accept_button = tk.Button(self.container, text="Aceptar", command=lambda u=user[0]: self.accept_user(u))
+                accept_button = tk.Button(self.container, text="Aceptar", bg="green", command=lambda u=user[0]: self.accept_user(u))
                 accept_button.pack(pady=2)
 
                 # Botón para rechazar el usuario
-                reject_button = tk.Button(self.container, text="Rechazar", command=lambda u=user[0]: self.reject_user(u))
+                reject_button = tk.Button(self.container, text="Rechazar", bg="red", command=lambda u=user[0]: self.reject_user(u))
                 reject_button.pack(pady=2)
 
         # Navegación entre páginas
@@ -290,12 +290,12 @@ class App:
 
         # Botón "Anterior" (sólo mostrar si no estamos en la primera página)
         if page > 1:
-            previous_button = tk.Button(nav_frame, text="Anterior", command=lambda: self.admin_manage_users(page-1))
+            previous_button = tk.Button(nav_frame, text="Anterior", bg="grey", command=lambda: self.admin_manage_users(page-1))
             previous_button.pack(side="left", padx=5)
 
         # Botón "Siguiente" (sólo mostrar si hay más usuarios que mostrar)
         if end_index < total_users:
-            next_button = tk.Button(nav_frame, text="Siguiente", command=lambda: self.admin_manage_users(page+1))
+            next_button = tk.Button(nav_frame, text="Siguiente", bg="grey", command=lambda: self.admin_manage_users(page+1))
             next_button.pack(side="right", padx=5)
 
         # Botón para volver al menú principal (siempre visible)
@@ -330,11 +330,11 @@ class App:
             user_label.pack(pady=5)
 
             # Botón para eliminar al usuario
-            delete_button = tk.Button(self.container, text="Eliminar", command=lambda u=user[0]: self.delete_user(u))
+            delete_button = tk.Button(self.container, text="Eliminar", bg="red", command=lambda u=user[0]: self.delete_user(u))
             delete_button.pack(pady=2)
 
             # Botón para modificar la información del usuario
-            modify_button = tk.Button(self.container, text="Modificar", command=lambda u=user[0]: self.admin_modify_user_info(u))
+            modify_button = tk.Button(self.container, text="Modificar", bg="green", command=lambda u=user[0]: self.admin_modify_user_info(u))
             modify_button.pack(pady=2)
 
         # Navegación entre páginas
@@ -343,12 +343,12 @@ class App:
 
         # Botón "Anterior" (sólo mostrar si no estamos en la primera página)
         if page > 1:
-            previous_button = tk.Button(nav_frame, text="Anterior", command=lambda: self.admin_manage_accounts(page-1))
+            previous_button = tk.Button(nav_frame, text="Anterior", bg="grey", command=lambda: self.admin_manage_accounts(page-1))
             previous_button.pack(side="left", padx=5)
 
         # Botón "Siguiente" (sólo mostrar si hay más usuarios que mostrar)
         if end_index < total_users:
-            next_button = tk.Button(nav_frame, text="Siguiente", command=lambda: self.admin_manage_accounts(page+1))
+            next_button = tk.Button(nav_frame, text="Siguiente", bg="grey", command=lambda: self.admin_manage_accounts(page+1))
             next_button.pack(side="right", padx=5)
 
         # Botón para volver al menú principal (siempre visible)
