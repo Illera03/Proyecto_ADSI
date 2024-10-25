@@ -115,41 +115,11 @@ class UserManager:
             messagebox.showerror("Error", "No se pudo conectar con OMDb API.")
             return None
         
-    # Métodos del administrador
 
     def close_connection(self):
         """Cerrar la conexión a la base de datos."""
         if self.connection:
             self.connection.close()
-    def get_pending_users(self):
-        """Obtener una lista de usuarios pendientes de aceptación."""
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT username, email FROM Usuarios WHERE status = 'pendiente'")
-        return cursor.fetchall()
-
-    def accept_user(self, username):
-        """Aceptar la solicitud de registro de un usuario."""
-        cursor = self.connection.cursor()
-        cursor.execute("UPDATE Usuarios SET status = 'aceptado' WHERE username = ?", (username,))
-        self.connection.commit()
-
-    def reject_user(self, username):
-        """Rechazar la solicitud de registro de un usuario."""
-        cursor = self.connection.cursor()
-        cursor.execute("DELETE FROM Usuarios WHERE username = ?", (username,))
-        self.connection.commit()
-        
-    def delete_user(self, username):
-        """Eliminar un usuario de la base de datos"""
-        cursor = self.connection.cursor()
-        cursor.execute("DELETE FROM Usuarios WHERE username = ?", (username,))
-        self.connection.commit()
-        
-    def get_all_users(self):
-        """Obtener todos los usuarios de la base de datos"""
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT username, email FROM Usuarios")
-        return cursor.fetchall() 
 
 
 

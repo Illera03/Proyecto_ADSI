@@ -1,11 +1,15 @@
 import tkinter as tk
 from tkinter import messagebox
 from user_management import UserManager
+from admin_management import AdminManager
 
 class App:
     def __init__(self, master):
         self.master = master
         self.master.title("Video Club")
+        
+        #Inicializar AdminManager
+        self.admin_manager = AdminManager("data/video_club.db")
 
         # Inicializar UserManager
         self.user_manager = UserManager("data/video_club.db")
@@ -25,16 +29,13 @@ class App:
     def create_main_buttons(self):
         """Crear botones para elegir entre registro e inicio de sesión"""
         self.clear_frame()
-        self.container.focus_force()  # Asegura que la ventana tenga el foco
-
         # Botones para registro y login
         tk.Button(self.container, text="Registrar", command=self.show_register).pack(pady=10)
         tk.Button(self.container, text="Iniciar sesión", command=self.show_login).pack(pady=10)
-
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
     def show_register(self):
         """Muestra los campos de registro en la ventana principal"""
         self.clear_frame()
-        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
         tk.Label(self.container, text="Nombre de usuario").pack()
         username_entry = tk.Entry(self.container)
@@ -50,6 +51,7 @@ class App:
 
         tk.Button(self.container, text="Registrar", command=lambda: self.register_user(username_entry.get(), password_entry.get(), email_entry.get())).pack(pady=10)
         tk.Button(self.container, text="Volver", command=self.create_main_buttons).pack(pady=10)
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def register_user(self, username, password, email):
         """Registra el usuario"""
@@ -57,13 +59,14 @@ class App:
         if reg:
             messagebox.showinfo("Éxito", "Registro exitoso")
             self.create_main_buttons()
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
         else:
             messagebox.showerror("Error", "Registro incorrecto")
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def show_login(self):
         """Muestra los campos de inicio de sesión en la ventana principal"""
         self.clear_frame()
-        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
         tk.Label(self.container, text="Nombre de usuario").pack()
         username_entry = tk.Entry(self.container)
@@ -75,6 +78,7 @@ class App:
 
         tk.Button(self.container, text="Iniciar sesión", command=lambda: self.login_user(username_entry.get(), password_entry.get())).pack(pady=10)
         tk.Button(self.container, text="Volver", command=self.create_main_buttons).pack(pady=10)
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def login_user(self, username, password):
         """Inicia sesión"""
@@ -82,6 +86,7 @@ class App:
         
         if user == "pendiente":
             messagebox.showwarning("Pendiente", "Tu solicitud de registro está pendiente de aceptación por un administrador.")
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
         elif user:
             # Guardar el usuario y su rol
             self.logged_in_user = user['username']
@@ -89,10 +94,12 @@ class App:
 
             messagebox.showinfo("Éxito", f"Inicio de sesión exitoso. Rol: {self.logged_in_role}")
             self.show_user_menu()  # Mostrar las opciones dependiendo del rol
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
         else:
             messagebox.showerror("Error", "Credenciales incorrectas")
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
 
-
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
     def show_user_menu(self):
         """Muestra el menú de opciones según el rol"""
         self.clear_frame()
@@ -112,22 +119,26 @@ class App:
 
         # Botón para cerrar sesión
         tk.Button(self.container, text="Cerrar sesión", command=self.logout_user).pack(pady=10)
-
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
     def admin_manage_users(self):
         """Función del administrador para gestionar peticiones de usuarios"""
         messagebox.showinfo("Admin", "Función de peticiones de registro")
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def admin_manage_accounts(self):
         """Función del administrador para gestionar cuentas (modificar y eliminar)"""
         messagebox.showinfo("Admin", "Función de gestión de cuentas")
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def user_rent_movies(self):
         """Función del usuario para alquilar películas"""
         messagebox.showinfo("Usuario", command=self.rent_user_movies).pack(pady=10)
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def user_view_rentals(self):
         """Función del usuario para ver sus alquileres"""
         messagebox.showinfo("Usuario", "Función para ver alquileres")
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
         
     def user_update_info(self):
         """Función del usuario para actualizar su información personal"""
@@ -157,6 +168,7 @@ class App:
         # Botón para guardar los cambios
         tk.Button(self.container, text="Actualizar", command=lambda: self.update_user_info(username_entry.get(), email_entry.get(), password_entry.get())).pack(pady=10)
         tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def update_user_info(self, username, email, password):
         """Actualizar la información del usuario en la base de datos"""
@@ -167,14 +179,16 @@ class App:
 
         if success:
             messagebox.showinfo("Éxito", "Datos actualizados correctamente.")
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
             self.show_user_menu()
         else:
             messagebox.showerror("Error", "No se pudo actualizar la información.")
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
     
     def user_request_movies(self):
         """Función para solicitar una película"""
         self.clear_frame()
-        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
         # Etiqueta y campo de entrada para la película solicitada
         tk.Label(self.container, text="Introduce el nombre de la película:").pack(pady=10)
@@ -186,11 +200,13 @@ class App:
 
         # Botón para volver al menú de usuario
         tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def request_movie_from_api(self, movie_title):
         """Función para buscar la película en OMDb API y registrar la solicitud"""
         if not movie_title:
             messagebox.showwarning("Error", "Debes introducir el nombre de una película")
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
             return
 
         # Llamar a la función para buscar la película en OMDb
@@ -202,9 +218,11 @@ class App:
 
             # Mostrar mensaje de éxito
             messagebox.showinfo("Éxito", f"Película '{movie_data['Title']}' solicitada correctamente.")
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
         else:
             messagebox.showerror("Error", "No se encontró la película en la base de datos OMDb.")
-        
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def logout_user(self):
         """Cerrar sesión"""
@@ -212,16 +230,17 @@ class App:
         self.logged_in_role = None
         messagebox.showinfo("Cerrar sesión", "Has cerrado sesión")
         self.create_main_buttons()
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def clear_frame(self):
         """Eliminar todos los widgets actuales del contenedor"""
         for widget in self.container.winfo_children():
             widget.destroy()
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def rent_user_movies(self):
             """Función para ver las películas disponibles"""
             self.clear_frame()
-            self.container.focus_force()  # Asegura que la ventana tenga el foco
             tk.Label(self.container, text="Películas disponibles").pack(pady=10)
 
             movies = self.user_manager.get_all_movies() # Supongamos que esta función devuelve una lista de diccionarios con las películas
@@ -232,6 +251,7 @@ class App:
                 tk.Label(self.container, text=movie_info).pack()
 
             tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def get_all_movies(self):
         """Obtener todas las películas de la base de datos"""
@@ -250,13 +270,12 @@ class App:
     def admin_manage_users(self, page=1):
         """Función del administrador para gestionar usuarios con paginación."""
         self.clear_frame()
-        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
         # Número de usuarios a mostrar por página
         items_per_page = 5
 
         # Obtener lista de usuarios pendientes
-        pending_users = self.user_manager.get_pending_users()
+        pending_users = self.admin_manager.get_pending_users()
         total_users = len(pending_users)
 
         # Calcular el rango de usuarios a mostrar en esta página
@@ -300,19 +319,17 @@ class App:
 
         # Botón para volver al menú principal (siempre visible)
         tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
-
-
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def admin_manage_accounts(self, page=1):
         """Función del administrador para gestionar cuentas de usuario con paginación."""
         self.clear_frame()
-        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
         # Número de usuarios a mostrar por página
         items_per_page = 5
 
         # Obtener todas las cuentas de usuario
-        all_users = self.user_manager.get_all_users()
+        all_users = self.admin_manager.get_all_users()
         total_users = len(all_users)
 
         # Calcular el rango de usuarios a mostrar en esta página
@@ -353,31 +370,33 @@ class App:
 
         # Botón para volver al menú principal (siempre visible)
         tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
-
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
 
     def accept_user(self, username):
         """Aceptar solicitud de registro"""
-        self.user_manager.accept_user(username)
+        self.admin_manager.accept_user(username)
         messagebox.showinfo("Éxito", f"Usuario {username} aceptado.")
         self.admin_manage_users()
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def reject_user(self, username):
         """Rechazar solicitud de registro"""
-        self.user_manager.reject_user(username)
+        self.admin_manager.reject_user(username)
         messagebox.showinfo("Información", f"Usuario {username} rechazado.")
         self.admin_manage_users()
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
     
     def delete_user(self, username):
         """Eliminar un usuario de la base de datos"""
-        self.user_manager.delete_user(username)
+        self.admin_manager.delete_user(username)
         messagebox.showinfo("Información", f"Usuario {username} eliminado.")
         self.admin_manage_accounts()
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
     
     def admin_modify_user_info(self, username):
         """Modificar los datos personales de un usuario"""
         self.clear_frame()
-        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
         # Obtener la información actual del usuario desde la base de datos
         user_info = self.user_manager.get_user_info(username)
@@ -402,6 +421,7 @@ class App:
         # Botón para guardar los cambios
         tk.Button(self.container, text="Actualizar", command=lambda: self.update_user_info_admin(username, username_entry.get(), email_entry.get(), password_entry.get())).pack(pady=10)
         tk.Button(self.container, text="Volver", command=self.admin_manage_accounts).pack(pady=10)
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def update_user_info_admin(self, original_username, new_username, email, password):
         """Actualizar la información de un usuario como administrador"""
@@ -412,9 +432,13 @@ class App:
 
         if success:
             messagebox.showinfo("Éxito", f"Datos de {original_username} actualizados correctamente.")
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
             self.admin_manage_accounts()
         else:
             messagebox.showerror("Error", "No se pudo actualizar la información.")
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
+            
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
 
 if __name__ == "__main__":
     root = tk.Tk()
