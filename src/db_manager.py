@@ -35,29 +35,28 @@ def create_tables(conn):
 
     # Tabla Alquileres
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Alquileres (
-        rental_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
+    CREATE TABLE "Alquileres" (
+        user_id	INTEGER,
         movie_id INTEGER,
         rental_date DATETIME DEFAULT CURRENT_TIMESTAMP,
         return_date DATETIME,
-        FOREIGN KEY (user_id) REFERENCES Usuarios (user_id),
-        FOREIGN KEY (movie_id) REFERENCES Películas (movie_id)
-    );
+        PRIMARY KEY("user_id","movie_id","rental_date"),
+        FOREIGN KEY("movie_id") REFERENCES "Películas"("movie_id"),
+        FOREIGN KEY("user_id") REFERENCES "Usuarios"("user_id")
+);
     ''')
     
     # Tabla Reseñas
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Reseñas (
-        review_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
+        user_id	INTEGER,
         movie_id INTEGER,
         rating INTEGER,
         comment TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES Usuarios (user_id),
-        FOREIGN KEY (movie_id) REFERENCES Películas (movie_id)
-    );
+        PRIMARY KEY("user_id","movie_id"),
+        FOREIGN KEY("movie_id") REFERENCES "Películas"("movie_id"),
+        FOREIGN KEY("user_id") REFERENCES "Usuarios"("user_id")
+);
     ''')
     
     # Tabla Peticiones

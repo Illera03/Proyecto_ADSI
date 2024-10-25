@@ -54,3 +54,7 @@ Existe un administrador ya creado:
 __username__: \_admin\_
 
 __password__: test
+
+
+## CAMBIOS POR HACER:
+LAS TABLAS: PETICIONES Y PELÍCULAS NO TIENEN LOS MISMOS CAMPOS QUE EN EL MODELO DE DOMINIO (HAY QUE CAMBIARLO)
