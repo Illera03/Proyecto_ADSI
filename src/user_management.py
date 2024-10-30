@@ -7,6 +7,7 @@ from tkinter import messagebox
 
 
 class UserManager:
+
     def __init__(self, db_file):
         self.db_file = db_file
         self.connection = self.create_connection()  # Crear una conexión al inicializar
@@ -19,6 +20,10 @@ class UserManager:
         except sqlite3.Error as e:
             print(f"Error al conectar con la base de datos: {e}")
         return conn
+    
+    def getUser():
+        
+        return 0
 
     def register_user(self, username, password, email, role="user"):
         """Registrar un nuevo usuario en la base de datos."""

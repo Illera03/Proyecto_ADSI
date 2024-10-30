@@ -35,7 +35,7 @@ def create_tables(conn):
 
     # Tabla Alquileres
     cursor.execute('''
-    CREATE TABLE "Alquileres" (
+    CREATE TABLE IF NOT EXISTS "Alquileres" (
         user_id	INTEGER,
         movie_id INTEGER,
         rental_date DATETIME DEFAULT CURRENT_TIMESTAMP,

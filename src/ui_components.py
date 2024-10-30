@@ -2,11 +2,15 @@ import tkinter as tk
 from tkinter import messagebox
 from user_management import UserManager
 from admin_management import AdminManager
+from movie_management import MovieManager
 
 class App:
     def __init__(self, master):
         self.master = master
         self.master.title("Video Club")
+        
+        #Inicializar MovieManager
+        self.movie_manager = MovieManager("data/video_club.db")
         
         #Inicializar AdminManager
         self.admin_manager = AdminManager("data/video_club.db")
@@ -132,7 +136,7 @@ class App:
 
     def user_rent_movies(self):
         """Función del usuario para alquilar películas"""
-        messagebox.showinfo("Usuario", command=self.rent_user_movies).pack(pady=10)
+        messagebox.showinfo(text="Alquilar pelicula", command=self.user_rent_movies).pack(pady=10)
         self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def user_view_rentals(self):
@@ -238,33 +242,6 @@ class App:
             widget.destroy()
         self.container.focus_force()  # Asegura que la ventana tenga el foco
 
-    def rent_user_movies(self):
-            """Función para ver las películas disponibles"""
-            self.clear_frame()
-            tk.Label(self.container, text="Películas disponibles").pack(pady=10)
-
-            movies = self.user_manager.get_all_movies() # Supongamos que esta función devuelve una lista de diccionarios con las películas
-
-
-            for movie in movies:
-                movie_info = f"ID: {movie['id']} - Título: {movie['title']} - Año: {movie['year']}"
-                tk.Label(self.container, text=movie_info).pack()
-
-            tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
-            self.container.focus_force()  # Asegura que la ventana tenga el foco
-
-    def get_all_movies(self):
-        """Obtener todas las películas de la base de datos"""
-        cursor = self.user_manager.connection.cursor()
-        cursor.execute("SELECT id, title, year FROM Movies")
-        movies = cursor.fetchall()
-
-        movie_list = []
-        for movie in movies:
-            movie_list.append({'id': movie[0], 'title': movie[1], 'year': movie[2]})
-
-        return movie_list
-    
     # Métodos del administrador
     
     def admin_manage_users(self, page=1):
@@ -438,6 +415,53 @@ class App:
             messagebox.showerror("Error", "No se pudo actualizar la información.")
             self.container.focus_force()  # Asegura que la ventana tenga el foco
             
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
+
+    def user_rent_movies(self, page=1):
+        """Función para ver las películas disponibles"""
+        self.clear_frame()
+        tk.Label(self.container, text="Películas disponibles").pack(pady=10)
+        # Número de películas a mostrar por página
+        items_per_page = 5
+        #Obtener todas las películas
+        movies = self.movie_manager.get_all_movies() # Supongamos que esta función devuelve una lista de diccionarios con las películas
+        total_movies = len(movies)
+        
+         # Calcular el rango de peliculas a mostrar en esta página
+        start_index = (page - 1) * items_per_page
+        end_index = start_index + items_per_page
+        movies_to_show = self.movie_manager.get_all_movies[start_index:end_index]
+
+        # Mostrar las peliculas de la página actual
+        if not movies_to_show:
+            tk.Label(self.container, text="No hay más películas disponibles", font=("Arial", 14)).pack(pady=5)
+        else:
+            for movie in movies:
+                movie_info = f"ID: {movie['id']} - Título: {movie['title']} - Año: {movie['year']}"
+                tk.Label(self.container, text=movie_info).pack()
+
+             # Botón alquilar la película
+                rent_button = tk.Button(self.container, text="Alquilar", bg="grey", command=lambda m=movie[0]: self.rent_movie(self.logged_in_user,m))
+                rent_button.pack(pady=2)
+
+        # Navegación entre páginas
+        nav_frame = tk.Frame(self.container)
+        nav_frame.pack(pady=10)
+
+         # Botón "Anterior" (sólo mostrar si no estamos en la primera página)
+        if page > 1:
+            previous_button = tk.Button(nav_frame, text="Anterior", bg="grey", command=lambda: self.user_rent_movies(page-1))
+            previous_button.pack(side="left", padx=5)
+
+        # Botón "Siguiente" (sólo mostrar si hay más usuarios que mostrar)
+        if end_index < total_movies:
+            next_button = tk.Button(nav_frame, text="Siguiente", bg="grey", command=lambda: self.user_rent_movies(page+1))
+            next_button.pack(side="right", padx=5)
+
+
+
+
+        tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
         self.container.focus_force()  # Asegura que la ventana tenga el foco
 
 if __name__ == "__main__":
