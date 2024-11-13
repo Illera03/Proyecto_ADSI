@@ -16,8 +16,10 @@ def create_tables(conn):
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         role TEXT NOT NULL DEFAULT 'user'
+        estado_petición TEXT DEFAULT 'Rechazado'
+        idAdmin INTEGER,
+        FOREIGN KEY("idAdmin") REFERENCES "Usuarios"("user_id")
     );
     ''')
     
@@ -29,7 +31,10 @@ def create_tables(conn):
         genre TEXT,
         release_year INTEGER,
         director TEXT,
-        available_copies INTEGER DEFAULT 0
+        notaPromedio REAL DEFAULT 0.0,
+        idAdminAceptado INTEGER,
+        FOREIGN KEY("idAdminAceptado") REFERENCES "Usuarios"("user_id")
+        
     );
     ''')
 
@@ -39,7 +44,6 @@ def create_tables(conn):
         user_id	INTEGER,
         movie_id INTEGER,
         rental_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-        return_date DATETIME,
         PRIMARY KEY("user_id","movie_id","rental_date"),
         FOREIGN KEY("movie_id") REFERENCES "Películas"("movie_id"),
         FOREIGN KEY("user_id") REFERENCES "Usuarios"("user_id")
@@ -62,12 +66,12 @@ def create_tables(conn):
     # Tabla Peticiones
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Peticiones (
-        request_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        movie_id INTEGER,
         user_id INTEGER,
-        movie_title TEXT NOT NULL,
-        request_date DATETIME DEFAULT CURRENT_TIMESTAMP,
         status TEXT DEFAULT 'pendiente',
-        FOREIGN KEY (user_id) REFERENCES Usuarios (user_id)
+        PRIMARY KEY("user_id","movie_id"),
+        FOREIGN KEY("movie_id") REFERENCES "Películas"("movie_id"),
+        FOREIGN KEY("user_id") REFERENCES "Usuarios"("user_id")
     );
     ''')
 
@@ -76,11 +80,20 @@ def create_tables(conn):
                       ''')
     
     cursor.execute('''
-                   INSERT INTO Películas (title, genre,release_year, director,available_copies) VALUES
-                   ("Harry","Accion",2012,"sfgdf", 5),
-                   ("Harry2","Accion",2012,"sfgdf", 5),
-                   ("Harry3","Accion",2012,"sfgdf", 5),
-                   ("Harry4","Accion",2012,"sfgdf", 5);
+                   INSERT INTO Películas (title, genre,release_year, director, notaPromedio,idAdminAceptado) VALUES
+                   ("El señor de los anillos","Accion",2001,"Peter Jackson", 9,1),
+                   ("Gladiator","Accion",2000,"Ridley Scott", 8,2),
+                   ("Harry Potter","Accion",2001,"Chris Columbus", 7,3),
+                   ("Titanic","Romance",1997,"James Cameron", 8,4),
+                   ("El Padrino","Drama",1972,"Francis Ford Coppola", 9,3),
+                   ("El Rey León","Animación",1994,"Roger Allers", 8,4),
+                   ("La lista de Schindler","Drama",1993,"Steven Spielberg", 9,1),
+                   ("El club de la lucha","Drama",1999,"David Fincher", 8,2),
+                   ("El sexto sentido","Drama",1999,"M. Night Shyamalan", 7,1),
+                   ("El silencio de los corderos","Drama",1991,"Jonathan Demme", 8,2),
+                   ("El resplandor","Terror",1980,"Stanley Kubrick", 8,3),
+                   ("Origen","Ciencia Ficción",2010,"Christopher Nolan", 9,4),
+                   ("Batman: El caballero de la noche","Accion",2008,"Christopher Nolan", 9,1),;
                    ''')
     conn.commit()
 
