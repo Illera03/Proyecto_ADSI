@@ -207,10 +207,52 @@ class App:
             for rental in rentals:
                 movie_info = f"ID: {rental[0]} - Título: {rental[1]} - Año: {rental[3]} - Género: {rental[2]} - Director: {rental[4]}"
                 tk.Label(self.container, text=movie_info).pack()
-
+                # Verificar si el usuario ya tiene una reseña para esta película
+                review = self.movie_manager.get_review_for_movie(self.logged_in_user, rental[0])  # Obtener la reseña actual
+                if review:
+                    # Si ya existe la reseña, mostrar botón para modificarla
+                    modify_button = tk.Button(self.container, text="Modificar Reseña", bg="blue", command=lambda m=rental[0]: self.modify_review(m))
+                    modify_button.pack(pady=5)
+                else:
+                    # Si no existe la reseña, mostrar botón para añadirla
+                    add_button = tk.Button(self.container, text="Añadir Reseña", bg="green", command=lambda m=rental[0]: self.add_review(m))
+                    add_button.pack(pady=5)
         self.container.focus_force()  # Asegura que la ventana tenga el foco
         tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
-       
+
+
+
+    def add_review(self, movie_id):
+        """Función para añadir una reseña"""
+        # Solicitar al usuario que ingrese el texto de la reseña
+        self.clear_frame()  # Limpiar el marco de la interfaz de usuario antes de mostrar nuevos elementos
+
+        tk.Label(self.container, text="Añadir Reseña").pack(pady=10)
+
+        # Crear y mostrar un campo de entrada para la calificación
+        tk.Label(self.container, text="Calificación (1-5):").pack()
+        rating_entry = tk.Entry(self.container)
+        rating_entry.pack(pady=5)
+
+        # Crear y mostrar un campo de entrada para el comentario
+        tk.Label(self.container, text="Comentario:").pack()
+        comment_text = tk.Text(self.container, height=5, width=40)
+        comment_text.pack(pady=5)
+
+        if rating_entry and comment_text:
+            # Añadir la reseña a la base de datos
+            self.movie_manager.add_review(self.logged_in_user, movie_id, rating, review_text)
+            messagebox.showinfo("Éxito", "Reseña añadida correctamente.")
+        
+        else:
+            messagebox.showwarning("Advertencia", "Debes escribir una reseña y calificar la película.")
+
+
+    def modify_review(self, movie_id):
+       return 0
+
+
+
     def user_update_info(self):
         """Función del usuario para actualizar su información personal"""
         self.clear_frame()
