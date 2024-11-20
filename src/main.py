@@ -16,7 +16,3 @@ if __name__ == '__main__': # __name__ es una variable especial que se asigna el 
     root.geometry("800x700")  # Establecer tamaño de la ventana
     app = App(root)
     root.mainloop()
-
-
-
-

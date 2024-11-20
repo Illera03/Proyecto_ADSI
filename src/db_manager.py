@@ -10,6 +10,9 @@ def create_tables(conn):
     cursor = conn.cursor()
     
     # Tabla Usuarios
+    #cursor.execute('''
+    #               DROP TABLE IF EXISTS Usuarios;
+   # ''')
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Usuarios (
         user_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -17,7 +20,7 @@ def create_tables(conn):
         password TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         role TEXT NOT NULL DEFAULT 'user',
-        estado_petición TEXT DEFAULT 'Rechazado',
+        status TEXT DEFAULT 'Rechazado',
         idAdmin INTEGER,
         FOREIGN KEY("idAdmin") REFERENCES "Usuarios"("user_id")
     );
