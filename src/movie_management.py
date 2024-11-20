@@ -72,7 +72,7 @@ class MovieManager:
         """Modificar una reseña existente para una película"""
         cursor = self.connection.cursor()
         cursor.execute("""
-            UPDATE Reseñas SET  rating = ? AND comment = ? 
+            UPDATE Reseñas SET  rating = ?, comment = ? 
             WHERE user_id = ? AND movie_id = ?
         """, ( rating, comment, user_id, movie_id))
         self.connection.commit()
