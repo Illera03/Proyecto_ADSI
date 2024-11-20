@@ -221,36 +221,55 @@ class App:
         tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
 
 
-
     def add_review(self, movie_id):
         """Función para añadir una reseña"""
         # Solicitar al usuario que ingrese el texto de la reseña
         self.clear_frame()  # Limpiar el marco de la interfaz de usuario antes de mostrar nuevos elementos
-
         tk.Label(self.container, text="Añadir Reseña").pack(pady=10)
-
         # Crear y mostrar un campo de entrada para la calificación
-        tk.Label(self.container, text="Calificación (1-5):").pack()
+        tk.Label(self.container, text="Calificación (1-10):").pack()
         rating_entry = tk.Entry(self.container)
         rating_entry.pack(pady=5)
-
         # Crear y mostrar un campo de entrada para el comentario
         tk.Label(self.container, text="Comentario:").pack()
         comment_text = tk.Text(self.container, height=5, width=40)
         comment_text.pack(pady=5)
+        # Botón para guardar la reseña, inicialmente deshabilitado
+        save_button = tk.Button(self.container, text="Guardar Reseña", bg="grey", state=tk.DISABLED)
+        save_button.pack(pady=10)
 
-        if rating_entry and comment_text:
-            # Añadir la reseña a la base de datos
-            self.movie_manager.add_review(self.logged_in_user, movie_id, rating, review_text)
-            messagebox.showinfo("Éxito", "Reseña añadida correctamente.")
-        
-        else:
-            messagebox.showwarning("Advertencia", "Debes escribir una reseña y calificar la película.")
+        def validate_review(event=None):
+            """Habilitar el botón si ambos campos son válidos"""
+            rating = rating_entry.get().strip()
+            comment = comment_text.get("1.0", "end-1c").strip()
+            if rating.isdigit() and 1 <= int(rating) <= 10 and comment:
+                save_button.config(state=tk.NORMAL)
+            else:
+                save_button.config(state=tk.DISABLED)
+        # Asociar validación dinámica a los eventos de los widgets
+        rating_entry.bind("<KeyRelease>", validate_review)
+        comment_text.bind("<KeyRelease>", validate_review)
+
+        def save_review():
+            """Guardar la reseña en la base de datos"""
+            rating = int(rating_entry.get().strip())  # Extraer calificación
+            comment = comment_text.get("1.0", "end-1c").strip()  # Extraer comentario
+            try:
+                self.movie_manager.add_review(self.logged_in_user, movie_id, rating, comment)
+                messagebox.showinfo("Éxito", "Reseña añadida correctamente.")
+                self.user_view_rentals()  # Volver a la lista de alquileres
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo guardar la reseña: {e}")
+
+        # Conectar el botón de guardar al evento de guardar reseña
+        save_button.config(command=save_review)
+        # Botón para volver al menú anterior
+        tk.Button(self.container, text="Volver", command=self.user_view_rentals).pack(pady=10)
 
 
     def modify_review(self, movie_id):
        return 0
-
+    
 
 
     def user_update_info(self):
