@@ -16,8 +16,8 @@ def create_tables(conn):
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
-        role TEXT NOT NULL DEFAULT 'user'
-        estado_petición TEXT DEFAULT 'Rechazado'
+        role TEXT NOT NULL DEFAULT 'user',
+        estado_petición TEXT DEFAULT 'Rechazado',
         idAdmin INTEGER,
         FOREIGN KEY("idAdmin") REFERENCES "Usuarios"("user_id")
     );
@@ -72,12 +72,10 @@ def create_tables(conn):
         PRIMARY KEY("user_id","movie_id"),
         FOREIGN KEY("movie_id") REFERENCES "Películas"("movie_id"),
         FOREIGN KEY("user_id") REFERENCES "Usuarios"("user_id")
-    );
+);
     ''')
 
-    cursor.execute('''
-                   DELETE FROM Películas;
-                      ''')
+
     
     cursor.execute('''
                    INSERT INTO Películas (title, genre,release_year, director, notaPromedio,idAdminAceptado) VALUES
@@ -93,7 +91,7 @@ def create_tables(conn):
                    ("El silencio de los corderos","Drama",1991,"Jonathan Demme", 8,2),
                    ("El resplandor","Terror",1980,"Stanley Kubrick", 8,3),
                    ("Origen","Ciencia Ficción",2010,"Christopher Nolan", 9,4),
-                   ("Batman: El caballero de la noche","Accion",2008,"Christopher Nolan", 9,1),;
+                   ("Batman: El caballero de la noche","Accion",2008,"Christopher Nolan", 9,1);
                    ''')
     conn.commit()
 
