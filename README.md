@@ -27,9 +27,9 @@ Tecnologías utilizadas: Python + Tkinter y SQLite
 ## Asignación de funcionalidades
 
 -  Gestión de usarios: Jorge Illera
--  Alquiler de películas: xxx
--  Puntuación de películas: xxx
--  Incorporación de nuevas películas: xxx
+-  Alquiler de películas: Iker Argulo
+-  Puntuación de películas: Eider Valenzuela
+-  Incorporación de nuevas películas: Ander Javier Corral
 
 # Funcionalidades
 ## Gestión de Usuarios:

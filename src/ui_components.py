@@ -3,6 +3,7 @@ from tkinter import messagebox
 from user_management import UserManager
 from admin_management import AdminManager
 from movie_management import MovieManager
+from review_management import ReviewManager
 
 class App:
     def __init__(self, master):
@@ -11,6 +12,9 @@ class App:
         
         #Inicializar MovieManager
         self.movie_manager = MovieManager("data/video_club.db")
+
+         #Inicializar ReviewManager
+        self.review_manager = ReviewManager("data/video_club.db")
         
         #Inicializar AdminManager
         self.admin_manager = AdminManager("data/video_club.db")
@@ -190,12 +194,12 @@ class App:
         self.clear_frame()
         tk.Label(self.container, text="Mis Alquileres").pack(pady=10)
 
-        # Obtener los alquileres del usuario
+        # Obtener los alquileres del usuario ordenador por valoracion
         cursor = self.movie_manager.connection.cursor()
         cursor.execute("""
-            SELECT P.movie_id, P.title, P.genre, P.release_year, P.director
+            SELECT P.movie_id, P.title, P.genre, P.release_year, P.director, P.notaPromedio
             FROM Alquileres A JOIN Películas P ON A.movie_id = P.movie_id
-            WHERE A.user_id = ?
+            WHERE A.user_id = ? ORDER BY notaPromedio DESC
         """, (self.logged_in_user,))  # Suponiendo que self.logged_in_user contiene el ID del usuario
         rentals = cursor.fetchall()
 
@@ -205,10 +209,10 @@ class App:
         else:
             # Mostrar las películas alquiladas
             for rental in rentals:
-                movie_info = f"ID: {rental[0]} - Título: {rental[1]} - Año: {rental[3]} - Género: {rental[2]} - Director: {rental[4]}"
+                movie_info = f"ID: {rental[0]} - Título: {rental[1]} - Año: {rental[3]} - Género: {rental[2]} - Director: {rental[4]} - notaPromedio: {rental[5]}"
                 tk.Label(self.container, text=movie_info).pack()
                 # Verificar si el usuario ya tiene una reseña para esta película
-                review = self.movie_manager.get_review_for_movie(self.logged_in_user, rental[0])  # Obtener la reseña actual
+                review = self.review_manager.get_review_for_movie(self.logged_in_user, rental[0])  # Obtener la reseña actual
                 if review:
                     # Si ya existe la reseña, mostrar botón para modificarla
                     modify_button = tk.Button(self.container, text="Modificar Reseña", bg="blue", command=lambda m=rental[0]: self.modify_review(m))
@@ -217,6 +221,11 @@ class App:
                     # Si no existe la reseña, mostrar botón para añadirla
                     add_button = tk.Button(self.container, text="Añadir Reseña", bg="green", command=lambda m=rental[0]: self.add_review(m))
                     add_button.pack(pady=5)
+
+                    # Botón para ver reseñas de otros usuarios
+                view_reviews_button = tk.Button(self.container, text="Ver Reseñas", bg="orange", command=lambda m=rental[0]: self.show_others_reviews(m))
+                view_reviews_button.pack(pady=5)
+        
         self.container.focus_force()  # Asegura que la ventana tenga el foco
         tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
 
@@ -228,7 +237,7 @@ class App:
         # Crear y mostrar un campo de entrada para la calificación
         tk.Label(self.container, text="Calificación (1-10):").pack()
         rating_entry = tk.Entry(self.container)
-        rating_entry.pack(pady=5)
+        rating_entry.pack(pady=5) 
         # Crear y mostrar un campo de entrada para el comentario
         tk.Label(self.container, text="Comentario:").pack()
         comment_text = tk.Text(self.container, height=5, width=40)
@@ -239,9 +248,9 @@ class App:
 
         def validate_review(event=None):
             """Habilitar el botón si ambos campos son válidos"""
-            rating = rating_entry.get().strip()
+            rating = float(rating_entry.get().strip())
             comment = comment_text.get("1.0", "end-1c").strip()
-            if rating.isdigit() and 1 <= int(rating) <= 10 and comment:
+            if 1.0 <= rating <= 10.0 and comment:
                 save_button.config(state=tk.NORMAL)
             else:
                 save_button.config(state=tk.DISABLED)
@@ -251,10 +260,10 @@ class App:
 
         def save_review():
             """Guardar la reseña en la base de datos"""
-            rating = int(rating_entry.get().strip())  # Extraer calificación
+            rating = float(rating_entry.get().strip())  # Extraer calificación
             comment = comment_text.get("1.0", "end-1c").strip()  # Extraer comentario
             try:
-                self.movie_manager.add_review(self.logged_in_user, movie_id, rating, comment)
+                self.review_manager.add_review(self.logged_in_user, movie_id, rating, comment)
                 messagebox.showinfo("Éxito", "Reseña añadida correctamente.")
                 self.user_view_rentals()  # Volver a la lista de alquileres
             except Exception as e:
@@ -294,9 +303,9 @@ class App:
         # Función para habilitar o deshabilitar el botón de guardar dependiendo de la validez de los campos
         def validate_review(event=None):
             """Habilitar el botón si ambos campos son válidos"""
-            rating = rating_entry.get().strip()
+            rating = float(rating_entry.get().strip())
             comment = comment_text.get("1.0", "end-1c").strip()
-            if rating.isdigit() and 1 <= int(rating) <= 10 and comment:
+            if 1.0 <= float(rating) <= 10.0 and comment:
                 save_button.config(state=tk.NORMAL)
             else:
                 save_button.config(state=tk.DISABLED)
@@ -308,7 +317,7 @@ class App:
         # Función para guardar la reseña modificada en la base de datos
         def save_review():
             """Guardar la reseña modificada en la base de datos"""
-            rating = rating_entry.get().strip()  # Extraer calificación
+            rating = float(rating_entry.get().strip())  # Extraer calificación
             comment = comment_text.get("1.0", "end-1c").strip()  # Extraer comentario
             print(f"Rating: {rating}, Comment: {comment}")  # Verifica los valores
             try:
@@ -325,8 +334,23 @@ class App:
         # Botón para volver al menú anterior
         tk.Button(self.container, text="Volver", command=self.user_view_rentals).pack(pady=10)
 
+    def show_others_reviews(self, movie_id):
+        """Mostrar las reseñas de otros usuarios para una película específica"""
+        self.clear_frame()
+        tk.Label(self.container, text="Reseñas de Otros Usuarios").pack(pady=10)
 
+        # Obtener las reseñas de otros usuarios
+        other_reviews = self.review_manager.get_all_reviews_of_a_movie(movie_id, self.logged_in_user)
 
+        if other_reviews:
+            for user, rating, comment in other_reviews:
+                tk.Label(self.container, text=f"Usuario: {user} - Calificación: {rating}", font=("Arial", 10, "bold")).pack(anchor="w", padx=10, pady=2)
+                tk.Label(self.container, text=f"Comentario: {comment}", wraplength=400, justify="left").pack(anchor="w", padx=20, pady=2)
+        else:
+            tk.Label(self.container, text="No hay reseñas de otros usuarios para esta película.", fg="gray").pack(pady=10)
+
+        # Botón para volver al menú anterior
+        tk.Button(self.container, text="Volver", command=self.user_view_rentals).pack(pady=10)
 
     def user_update_info(self):
         """Función del usuario para actualizar su información personal"""

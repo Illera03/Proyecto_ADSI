@@ -27,7 +27,6 @@ class MovieManager:
         movie_list = []
         for movie in movies:
             movie_list.append({'id': movie[0], 'title': movie[1], 'year': movie[2]})
-
         return movie_list
     
     def rent_movie(self, user_id, movie_id):
@@ -39,40 +38,13 @@ class MovieManager:
     def get_user_rentals(self, user_id):
         """Obtener todas las películas que el usuario ha alquilado"""
         cursor = self.connection.cursor()
-        
         cursor.execute("""
             SELECT movie_id, title, genre, release_year, director, notaPromedio FROM Películas
             JOIN Alquileres ON Películas.movie_id = Alquileres.movie_id
             WHERE user_id = ?
         """, (user_id,)) # Consulta para obtener solo las películas alquiladas por el usuario
         rentals = cursor.fetchall()
-
         rental_list = []
         for rental in rentals:
             rental_list.append({'id': rental[0], 'title': rental[1], 'year': rental[2]})
         return rental_list
-    
-    def get_review_for_movie(self, user_id, movie_id):
-        """Obtener la reseña de un usuario para una película"""
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT rating, comment FROM Reseñas WHERE user_id = ? AND movie_id = ?", (user_id, movie_id))
-        review = cursor.fetchone()
-        return review  # Devuelve una tupla con la reseña (rating, comment) o None si no existe
-
-    def add_review(self, user_id, movie_id, rating, comment):
-        """Añadir una reseña para una película"""
-        cursor = self.connection.cursor()
-        cursor.execute("""
-            INSERT INTO Reseñas (user_id, movie_id, rating, comment) 
-            VALUES (?, ?, ?, ?)
-        """, (user_id, movie_id, rating, comment))
-        self.connection.commit()
-
-    def modify_review(self, user_id, movie_id, rating, comment):
-        """Modificar una reseña existente para una película"""
-        cursor = self.connection.cursor()
-        cursor.execute("""
-            UPDATE Reseñas SET  rating = ?, comment = ? 
-            WHERE user_id = ? AND movie_id = ?
-        """, ( rating, comment, user_id, movie_id))
-        self.connection.commit()
