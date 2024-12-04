@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
-from user_management import UserManager
-from admin_management import AdminManager
+from CONTROLADOR.user_management import UserManager
+from CONTROLADOR.admin_management import AdminManager
 from movie_management import MovieManager
 from review_management import ReviewManager
 

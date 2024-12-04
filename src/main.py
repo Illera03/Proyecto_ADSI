@@ -1,5 +1,5 @@
 from db_manager import create_connection, create_tables
-from ui_components import App
+from VISTA.ui_components import App
 import tkinter as tk
 
 def db():
