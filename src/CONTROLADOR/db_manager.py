@@ -5,11 +5,28 @@ def create_connection(db_file):
     conn = sqlite3.connect(db_file)
     return conn
 
+def insert_user(conn, username, password, email):
+    """ Insertar un nuevo usuario en la base de datos """
+    cursor = conn.cursor()
+    # Si el usuario es 'admin', le asignamos el rol de administrador
+    if username.lower() == "_admin_":
+        role = "admin"
+    try:
+        # Añadimos la columna `status` con valor inicial "pendiente" para usuarios no administradores
+        if role == "admin":
+            cursor.execute("INSERT INTO Usuarios (username, password, email, role, status) VALUES (?, ?, ?, ?, 'aceptado')", 
+                        (username, password, email, role))
+        else:
+            cursor.execute("INSERT INTO Usuarios (username, password, email, role, status) VALUES (?, ?, ?, ?, 'pendiente')", 
+                        (username, password, email, role))
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+
 def create_tables(conn):
     """ Crear las tablas necesarias en la base de datos """
     cursor = conn.cursor()
-
-
     #cursor.execute(''' DROP TABLE IF EXISTS Reseñas; ''')
     #cursor.execute(''' DROP TABLE IF EXISTS Alquileres; ''')
     #cursor.execute(''' DROP TABLE IF EXISTS Películas; ''')

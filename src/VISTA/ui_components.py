@@ -21,7 +21,7 @@ class App:
         self.admin_manager = AdminManager("data/video_club.db") #TODO CAMBIAR
 
         # Inicializar UserManager
-        self.user_manager = UserManager("data/video_club.db") #TODO CAMBIAR
+        self.user_manager = UserManager.user_manager()
         
         # Inicializar GeneralManager
         self.general_manager = GeneralManager.general_manager()
