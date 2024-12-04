@@ -10,16 +10,11 @@ class User:
             self.role = "user"
         self.idAdmin = None
 
-    def __str__(self):
-        return f"User: {self.name}, {self.age}"
-
     def user_with_name(self, username):
         return self.username == username
 
     def new_user(self, username, password, email):
-        self.username = username
-        self.password = password
-        self.email = email
+        self.__init__(username, password, email)
         return True
 
     def its_me(self, username, password):
@@ -30,11 +25,9 @@ class User:
 
     def get_user_info(self):
         return {
-            "name": self.name,
-            "age": self.age,
             "username": self.username,
             "email": self.email,
-            "estado_peticion": self.estado_peticion
+            "password": self.password
         }
 
     def update_user_info(self, new_username, new_password, new_email):

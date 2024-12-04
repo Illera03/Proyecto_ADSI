@@ -1,4 +1,5 @@
 class Movie:
+
     def __init__(self, id, title, genre, release_year, director, nota_promedio=0.0, id_admin_aceptado=None):
         self.id = id
         self.title = title
@@ -11,13 +12,6 @@ class Movie:
     def movie_with_title(self, title):
         return self.title == title
     
-    def update_movie_details(self, title=None, genre=None, release_year=None, director=None):
-        if title:
-            self.title = title
-        if genre:
-            self.genre = genre
-        if release_year:
-            self.release_year = release_year
-        if director:
-            self.director = director
-        return True
+
+    def new_movie(id, title, genre, release_year, director, nota_promedio=0.0, id_admin_aceptado=None):
+        return Movie(id, title, genre, release_year, director, nota_promedio, id_admin_aceptado)
