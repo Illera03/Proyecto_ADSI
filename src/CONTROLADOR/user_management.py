@@ -1,9 +1,10 @@
 # user_management.py
 import sqlite3
-from db_manager import create_connection  # Asumiendo que existe en otro lugar
+from CONTROLADOR.db_manager import create_connection  # Asumiendo que existe en otro lugar
 import requests
 import tkinter as tk
 from tkinter import messagebox
+import MODELO.user as user
 
 
 class UserManager:
@@ -11,6 +12,12 @@ class UserManager:
     def __init__(self, db_file):
         self.db_file = db_file
         self.connection = self.create_connection()  # Crear una conexión al inicializar
+        self.__user_manager = UserManager()
+        self.__user_list = []
+    
+    @property
+    def user_manager(self):
+        return self.__user_manager
 
     def create_connection(self):
         """Crea una conexión a la base de datos SQLite"""
@@ -25,6 +32,17 @@ class UserManager:
         
         return 0
 
+
+    def add_user(self, username, password, email):
+        """Añadir un nuevo usuario a la lista de usuarios."""
+        for u in self.__user_list:
+            repetido = u.user_with_name(username)
+            if repetido:
+                return False
+                
+        self.__user_list.append(user.new_user(username, password, email))
+        return True
+    
     def register_user(self, username, password, email, role="user"):
         """Registrar un nuevo usuario en la base de datos."""
         cursor = self.connection.cursor()

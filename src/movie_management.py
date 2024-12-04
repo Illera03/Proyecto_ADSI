@@ -1,6 +1,6 @@
 import tkinter as tk
 import sqlite3
-from db_manager import create_connection 
+from CONTROLADOR.db_manager import create_connection 
 
 
 class MovieManager:
