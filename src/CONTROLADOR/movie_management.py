@@ -1,13 +1,15 @@
 import tkinter as tk
 import sqlite3
 from db_manager import create_connection 
-
+import MODELO.movie as movie
 
 class MovieManager:
 
     def __init__(self, db_file):
         self.db_file = db_file
         self.connection = self.create_connection()  # Crear una conexión al inicializar
+        self. __movie_manager = MovieManager()
+        self. __movieList = []
 
     def create_connection(self):
         """Crea una conexión a la base de datos SQLite"""
