@@ -4,6 +4,7 @@ from CONTROLADOR.user_management import UserManager
 from CONTROLADOR.admin_management import AdminManager
 from movie_management import MovieManager
 from review_management import ReviewManager
+from CONTROLADOR.general_management import GeneralManager
 
 class App:
     def __init__(self, master):
@@ -17,10 +18,13 @@ class App:
         self.review_manager = ReviewManager("data/video_club.db")
         
         #Inicializar AdminManager
-        self.admin_manager = AdminManager("data/video_club.db")
+        self.admin_manager = AdminManager("data/video_club.db") #TODO CAMBIAR
 
         # Inicializar UserManager
-        self.user_manager = UserManager("data/video_club.db")
+        self.user_manager = UserManager.user_manager()
+        
+        # Inicializar GeneralManager
+        self.general_manager = GeneralManager.general_manager()
 
         # Variables para almacenar el estado del usuario
         self.logged_in_user = None
@@ -64,7 +68,7 @@ class App:
 
     def register_user(self, username, password, email):
         """Registra el usuario"""
-        reg = self.user_manager.register_user(username, password, email)
+        reg = self.general_manager.register_user(username, password, email)
         if reg:
             messagebox.showinfo("Éxito", "Registro exitoso")
             self.create_main_buttons()

@@ -1,49 +1,66 @@
 # user_management.py
-import sqlite3
-from db_manager import create_connection  # Asumiendo que existe en otro lugar
+#import sqlite3
+#from CONTROLADOR.db_manager import create_connection  # Asumiendo que existe en otro lugar
 import requests
 import tkinter as tk
 from tkinter import messagebox
+import MODELO.user as user
 
 
 class UserManager:
 
     def __init__(self, db_file):
-        self.db_file = db_file
-        self.connection = self.create_connection()  # Crear una conexión al inicializar
+        #self.db_file = db_file
+        #self.connection = self.create_connection()  # Crear una conexión al inicializar
+        self.__user_manager = UserManager()
+        self.__user_list = []
+    
+    @property
+    def user_manager(self):
+        return self.__user_manager
 
-    def create_connection(self):
-        """Crea una conexión a la base de datos SQLite"""
-        conn = None
-        try:
-            conn = sqlite3.connect(self.db_file)
-        except sqlite3.Error as e:
-            print(f"Error al conectar con la base de datos: {e}")
-        return conn
+    # def create_connection(self):
+    #     """Crea una conexión a la base de datos SQLite"""
+    #     conn = None
+    #     try:
+    #         conn = sqlite3.connect(self.db_file)
+    #     except sqlite3.Error as e:
+    #         print(f"Error al conectar con la base de datos: {e}")
+    #     return conn
     
     def getUser():
         
         return 0
 
-    def register_user(self, username, password, email, role="user"):
-        """Registrar un nuevo usuario en la base de datos."""
-        cursor = self.connection.cursor()
+
+    def add_user(self, username, password, email): #TODO ESTÁ BIEN?
+        """Añadir un nuevo usuario a la lista de usuarios."""
+        for u in self.__user_list:
+            repetido = u.user_with_name(username)
+            if repetido:
+                return False        
+        self.__user_list.append(user.new_user(username, password, email))
+        return True
+    
+    # def register_user(self, username, password, email, role="user"):
+    #     """Registrar un nuevo usuario en la base de datos."""
+    #     cursor = self.connection.cursor()
         
-        # Si el usuario es 'admin', le asignamos el rol de administrador
-        if username.lower() == "_admin_":
-            role = "admin"
-        try:
-            # Añadimos la columna `status` con valor inicial "pendiente" para usuarios no administradores
-            if role == "admin":
-                cursor.execute("INSERT INTO Usuarios (username, password, email, role, status) VALUES (?, ?, ?, ?, 'aceptado')", 
-                            (username, password, email, role))
-            else:
-                cursor.execute("INSERT INTO Usuarios (username, password, email, role, status) VALUES (?, ?, ?, ?, 'pendiente')", 
-                            (username, password, email, role))
-            self.connection.commit()
-            return True
-        except sqlite3.IntegrityError:
-            return False
+    #     # Si el usuario es 'admin', le asignamos el rol de administrador
+    #     if username.lower() == "_admin_":
+    #         role = "admin"
+    #     try:
+    #         # Añadimos la columna `status` con valor inicial "pendiente" para usuarios no administradores
+    #         if role == "admin":
+    #             cursor.execute("INSERT INTO Usuarios (username, password, email, role, status) VALUES (?, ?, ?, ?, 'aceptado')", 
+    #                         (username, password, email, role))
+    #         else:
+    #             cursor.execute("INSERT INTO Usuarios (username, password, email, role, status) VALUES (?, ?, ?, ?, 'pendiente')", 
+    #                         (username, password, email, role))
+    #         self.connection.commit()
+    #         return True
+    #     except sqlite3.IntegrityError:
+    #         return False
 
     def authenticate_user(self, username, password):
         """Autenticar un usuario en la base de datos."""

@@ -1,4 +1,4 @@
-from db_manager import create_connection, create_tables
+from CONTROLADOR.db_manager import create_connection, create_tables
 from VISTA.ui_components import App
 import tkinter as tk
 

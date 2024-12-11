@@ -1,14 +1,14 @@
 class User:
     def __init__(self, username, password, email):
-        self.username = username
-        self.password = password
-        self.email = email
-        self.status = "pendiente"
-        if self.username == "_admin_":
-            self.role = "admin"
+        self.__username = username
+        self.__password = password
+        self.__email = email
+        self.__status = "pendiente"
+        if self.__username == "_admin_":
+            self.__role = "admin"
         else:
-            self.role = "user"
-        self.idAdmin = None
+            self.__role = "user"
+        self.__idAdmin = None
 
     def user_with_name(self, username):
         return self.username == username

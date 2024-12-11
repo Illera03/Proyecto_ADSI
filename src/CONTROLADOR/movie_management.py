@@ -1,7 +1,12 @@
 import tkinter as tk
 import sqlite3
+<<<<<<< HEAD:src/CONTROLADOR/movie_management.py
 from db_manager import create_connection 
 import MODELO.movie as movie
+=======
+from CONTROLADOR.db_manager import create_connection 
+
+>>>>>>> d29e0235096c27310cdcfe62c5f95991e650a833:src/movie_management.py
 
 class MovieManager:
 
