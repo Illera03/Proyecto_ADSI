@@ -2,6 +2,7 @@
 from CONTROLADOR.user_management import UserManager
 from CONTROLADOR.db_manager import DbManager
 from CONTROLADOR.alquiler_management import AlquilerManager
+import datetime
 
 class GeneralManager:
     _instance = None
@@ -32,4 +33,6 @@ class GeneralManager:
 
     def rent_movie(self, user_id, movie_id):
             """Alquilar una película"""
-            return AlquilerManager.rent_movie(user_id, movie_id)
+            return AlquilerManager.rent_movie(user_id, movie_id,fecha_alquiler=datetime.date.today())
+    def view_rented_movies(self):
+        return AlquilerManager.view_rented_movies()
