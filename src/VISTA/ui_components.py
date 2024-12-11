@@ -21,10 +21,10 @@ class App:
         self.admin_manager = AdminManager("data/video_club.db") #TODO CAMBIAR
 
         # Inicializar UserManager
-        self.user_manager = UserManager.user_manager()
+        self.user_manager = UserManager()
         
         # Inicializar GeneralManager
-        self.general_manager = GeneralManager.general_manager()
+        self.general_manager = GeneralManager()
 
         # Variables para almacenar el estado del usuario
         self.logged_in_user = None

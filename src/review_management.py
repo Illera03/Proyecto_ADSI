@@ -1,6 +1,6 @@
 import tkinter as tk
 import sqlite3
-from CONTROLADOR.db_manager import create_connection 
+from CONTROLADOR.db_manager import DbManager
 
 
 class ReviewManager:
