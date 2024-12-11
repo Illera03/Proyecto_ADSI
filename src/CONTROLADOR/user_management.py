@@ -8,38 +8,36 @@ import MODELO.user as user
 
 
 class UserManager:
+    _instance = None  # Variable de clase para guardar la instancia única
 
-    def __init__(self, db_file):
-        #self.db_file = db_file
-        #self.connection = self.create_connection()  # Crear una conexión al inicializar
-        self.__user_manager = UserManager()
-        self.__user_list = []
-    
-    @property
-    def user_manager(self):
-        return self.__user_manager
+    def __new__(cls, db_file=None):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.user_list = []  # Lista de usuarios
+        return cls._instance
 
-    # def create_connection(self):
-    #     """Crea una conexión a la base de datos SQLite"""
-    #     conn = None
-    #     try:
-    #         conn = sqlite3.connect(self.db_file)
-    #     except sqlite3.Error as e:
-    #         print(f"Error al conectar con la base de datos: {e}")
-    #     return conn
+
+    # # def create_connection(self):
+    # #     """Crea una conexión a la base de datos SQLite"""
+    # #     conn = None
+    # #     try:
+    # #         conn = sqlite3.connect(self.db_file)
+    # #     except sqlite3.Error as e:
+    # #         print(f"Error al conectar con la base de datos: {e}")
+    # #     return conn
     
     def getUser():
         
         return 0
 
-
     def add_user(self, username, password, email): #TODO ESTÁ BIEN?
         """Añadir un nuevo usuario a la lista de usuarios."""
-        for u in self.__user_list:
+        for u in self.user_list:
             repetido = u.user_with_name(username)
+            print(u.get_username())
             if repetido:
                 return False        
-        self.__user_list.append(user.new_user(username, password, email))
+        self.user_list.append(user.User.new_user(username, password, email))
         return True
     
     # def register_user(self, username, password, email, role="user"):
