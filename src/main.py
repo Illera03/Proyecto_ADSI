@@ -11,6 +11,8 @@ def initialize_database():
         conn.close()
     else:
         print("Error: No se pudo conectar a la base de datos.")
+    
+    db_manager.cargar_datos_iniciales()  # Cargar datos iniciales en la base de datos //TODO: Añadir datos iniciales   
 
 if __name__ == '__main__':
     # Inicializar la base de datos
