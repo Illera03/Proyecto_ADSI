@@ -32,11 +32,14 @@ class UserManager:
 
     def add_user(self, username, password, email): #TODO ESTÁ BIEN?
         """Añadir un nuevo usuario a la lista de usuarios."""
+        print("entro")
         for u in self.user_list:
+            print("entro2")
             repetido = u.user_with_name(username)
-            print(u.get_username())
+            print("usuario con nombre" + u.get_username())
             if repetido:
-                return False        
+                print("Ya hay un usuario con ese nombre")
+                return False 
         self.user_list.append(user.User.new_user(username, password, email))
         return True
     
