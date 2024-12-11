@@ -30,14 +30,14 @@ class UserManager:
         
         return 0
 
-
     def add_user(self, username, password, email): #TODO ESTÁ BIEN?
         """Añadir un nuevo usuario a la lista de usuarios."""
-        for u in self.__user_list:
+        for u in self.user_list:
             repetido = u.user_with_name(username)
+            print(u.get_username())
             if repetido:
                 return False        
-        self.__user_list.append(user.new_user(username, password, email))
+        self.user_list.append(user.User.new_user(username, password, email))
         return True
     
     # def register_user(self, username, password, email, role="user"):

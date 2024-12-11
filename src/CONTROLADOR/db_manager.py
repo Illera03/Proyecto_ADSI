@@ -1,7 +1,7 @@
 import sqlite3
 
 class DbManager:
-    _instance = None  # Variable de clase para la instancia única
+    _instance = None
 
     def __new__(cls, db_file="data/video_club.db", *args, **kwargs):
         if cls._instance is None:
@@ -10,22 +10,23 @@ class DbManager:
         return cls._instance
 
     def __init__(self, db_file="data/video_club.db"):
-        if not self.__initialized:  # Evitar inicialización múltiple
+        if not self.__initialized:
             self.__initialized = True
-            self.db_file = db_file  # Ahora se inicializa aquí
-            self.conn = self.create_connection()  # Crear la conexión en el init
+            self.db_file = db_file
+            self.conn = self.create_connection()
 
     def create_connection(self):
         """ Crear una conexión a la base de datos SQLite """
-        return sqlite3.connect(self.db_file)
-
+  
+        self.conn = sqlite3.connect(self.db_file)
+        return self.conn
 
     def insert_user(self, username, password, email):
-        """ Insertar un nuevo usuario en la base de datos """
+        
+        self.create_connection()
         cursor = self.conn.cursor()
         role = "admin" if username.lower() == "_admin_" else "user"
         try:
-            # Insertar con `status` inicial
             if role == "admin":
                 cursor.execute(
                     "INSERT INTO Usuarios (username, password, email, role, status) VALUES (?, ?, ?, ?, 'aceptado')",
@@ -38,7 +39,8 @@ class DbManager:
                 )
             self.conn.commit()
             return True
-        except sqlite3.IntegrityError:
+        except sqlite3.IntegrityError as e:
+            print(f"Error al insertar usuario: {e}")
             return False
 
     def create_tables(self):

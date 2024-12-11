@@ -10,38 +10,39 @@ class User:
             self.__role = "user"
         self.__idAdmin = None
 
-    def user_with_name(self, username):
-        return self.username == username
+    @staticmethod
+    def new_user(username, password, email):
+        # Crea y devuelve una nueva instancia de la clase User
+        return User(username, password, email)
 
-    def new_user(self, username, password, email):
-        self.__init__(username, password, email)
-        return True
+    def user_with_name(self, username):
+        return self.__username == username
 
     def its_me(self, username, password):
-        return self.username == username and self.password == password
+        return self.__username == username and self.__password == password
 
     def accepted_by_admin(self):
-        return self.estado_peticion == "aceptada"
+        return self.__status == "aceptada"
 
     def get_user_info(self):
         return {
-            "username": self.username,
-            "email": self.email,
-            "password": self.password
+            "username": self.__username,
+            "email": self.__email,
+            "password": self.__password
         }
 
     def update_user_info(self, new_username, new_password, new_email):
-        self.username = new_username
-        self.password = new_password
-        self.email = new_email
+        self.__username = new_username
+        self.__password = new_password
+        self.__email = new_email
         return True
 
     def change_status(self):
-        self.estado_peticion = "aceptada" if self.estado_peticion == "pendiente" else "pendiente"
+        self.__status = "aceptada" if self.__status == "pendiente" else "pendiente"
         return True
 
     def pending_user(self):
-        return self.estado_peticion == "pendiente"
+        return self.__status == "pendiente"
 
     def get_username(self):
-        return self.username
+        return self.__username

@@ -1,29 +1,34 @@
 # Description: General management class.
-import CONTROLADOR.user_management as UserManager
-import CONTROLADOR.db_manager as DbManager
+from CONTROLADOR.user_management import UserManager
+from CONTROLADOR.db_manager import DbManager
 
 class GeneralManager:
-    _instance = None  # Variable de clase para la instancia única
+    _instance = None
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance.__initialized = False  # Evitar múltiples inicializaciones
+            cls._instance.__initialized = False
         return cls._instance
 
     def __init__(self):
-        if not self.__initialized:  # Verificar si ya fue inicializado
+        if not self.__initialized:
             self.__initialized = True
-            # Aquí podrías agregar más inicializaciones si fuera necesario
 
     def register_user(self, username, password, email):
-        # Llamar a UserManager para agregar usuario
         user_manager = UserManager()
         bien = user_manager.add_user(username, password, email)
         if bien:
-            # Si el usuario fue añadido correctamente, insertarlo en la base de datos
-            db_manager_instance = DbManager("data/video_club.db")
-            db_manager_instance.insert_user(username, password, email)
+            print("Usuario añadido correctamente.")
+            # Usar la misma instancia de DbManager
+            db_manager_instance = DbManager()
+            if db_manager_instance.insert_user(username, password, email):
+                print("Usuario insertado en la base de datos.")
+            else:
+                print("Error al insertar usuario en la base de datos.")
+        else:
+            print("Error al agregar usuario.")
+
 
     
         
