@@ -1,7 +1,7 @@
 # Description: General management class.
 from CONTROLADOR.user_management import UserManager
 from CONTROLADOR.db_manager import DbManager
-from CONTROLADOR.alquiler_management import alquilerman
+from CONTROLADOR.alquiler_management import AlquilerManager
 
 class GeneralManager:
     _instance = None
@@ -32,4 +32,4 @@ class GeneralManager:
 
     def rent_movie(self, user_id, movie_id):
             """Alquilar una película"""
-            return alquilerman.rent_movie(user_id, movie_id)
+            return AlquilerManager.rent_movie(user_id, movie_id)

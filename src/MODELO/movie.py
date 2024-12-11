@@ -12,6 +12,6 @@ class Movie:
     def movie_with_title(self, title):
         return self.title == title
     
-
+    @staticmethod
     def new_movie(id, title, genre, release_year, director, nota_promedio=0.0, id_admin_aceptado=None):
         return Movie(id, title, genre, release_year, director, nota_promedio, id_admin_aceptado)

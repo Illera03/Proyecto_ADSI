@@ -12,7 +12,7 @@ class App:
         self.master.title("Video Club")
         
         #Inicializar MovieManager
-        self.movie_manager = MovieManager("data/video_club.db")
+        self.movie_manager = MovieManager()
 
          #Inicializar ReviewManager
         self.review_manager = ReviewManager("data/video_club.db")
