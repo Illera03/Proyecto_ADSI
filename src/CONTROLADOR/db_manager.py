@@ -1,4 +1,5 @@
 import sqlite3
+from CONTROLADOR.user_management import UserManager
 
 class DbManager:
     _instance = None
@@ -42,6 +43,27 @@ class DbManager:
         except sqlite3.IntegrityError as e:
             print(f"Error al insertar usuario: {e}")
             return False
+        
+    def cargar_datos_iniciales(self):
+        """ Pasar datos de la base de datos a la aplicación """
+        """Usuarios"""
+        user_manager = UserManager()
+        self.create_connection()
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM Usuarios")
+        usuarios = cursor.fetchall()
+        # Iterar por cada usuario y agregarlo al UserManager
+        for usuario in usuarios:
+            username = usuario[1] 
+            password = usuario[2]  
+            email = usuario[3]     
+            role = usuario[4]     
+            status = usuario[5]    
+            idAdmin = usuario[6]   
+            user_manager.add_user_from_bd(username, password, email, role, status, idAdmin)
+        
+        # TODO Cargar datos de películas, alquileres, etc..."""
+        user_manager.print_users()
 
     def create_tables(self):
         """ Crear las tablas necesarias en la base de datos """

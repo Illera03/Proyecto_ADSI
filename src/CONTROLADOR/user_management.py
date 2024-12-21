@@ -32,16 +32,22 @@ class UserManager:
 
     def add_user(self, username, password, email): #TODO ESTÁ BIEN?
         """Añadir un nuevo usuario a la lista de usuarios."""
-        print("entro")
         for u in self.user_list:
-            print("entro2")
             repetido = u.user_with_name(username)
-            print("usuario con nombre" + u.get_username())
             if repetido:
                 print("Ya hay un usuario con ese nombre")
                 return False 
         self.user_list.append(user.User.new_user(username, password, email))
         return True
+    
+    def add_user_from_bd(self, username, password, email, role, status, idAdmin): #TODO ESTÁ BIEN?
+        """Añadir un nuevo usuario a la lista de usuarios."""
+        for u in self.user_list:
+            repetido = u.user_with_name(username)
+            if repetido:
+                print("Ya hay un usuario con ese nombre")
+                return False 
+        self.user_list.append(user.User.new_user_from_bd(username=username, password=password, email=email, status=status, role=role, idAdmin=idAdmin))
     
     # def register_user(self, username, password, email, role="user"):
     #     """Registrar un nuevo usuario en la base de datos."""
@@ -143,6 +149,14 @@ class UserManager:
         """Cerrar la conexión a la base de datos."""
         if self.connection:
             self.connection.close()
+    
+    def print_users(self):
+        """Imprimir la lista de usuarios."""
+        print("\nDatos cargados de la base de datos:\n")
+        print("---------------------------------------------------------------------------------------------------------------------------------")
+        for user in self.user_list:
+            print(user.get_user_info())
+            print("---------------------------------------------------------------------------------------------------------------------------------")
 
 
 

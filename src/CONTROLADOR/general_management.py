@@ -26,10 +26,13 @@ class GeneralManager:
             db_manager_instance = DbManager()
             if db_manager_instance.insert_user(username, password, email):
                 print("Usuario insertado en la base de datos.")
+                return True
             else:
                 print("Error al insertar usuario en la base de datos.")
+                return False
         else:
             print("Error al agregar usuario.")
+            return False
 
     def rent_movie(self, user_id, movie_id):
             """Alquilar una película"""

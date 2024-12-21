@@ -14,6 +14,15 @@ class User:
     def new_user(username, password, email):
         # Crea y devuelve una nueva instancia de la clase User
         return User(username, password, email)
+    
+    @classmethod
+    def new_user_from_bd(cls, username, password, email, status, role, idAdmin):
+        """Crea y devuelve una nueva instancia de la clase User con todos los valores personalizados."""
+        instance = cls(username, password, email)
+        instance.__status = status
+        instance.__role = role
+        instance.__idAdmin = idAdmin
+        return instance
 
     def user_with_name(self, username):
         return self.__username == username
@@ -28,7 +37,10 @@ class User:
         return {
             "username": self.__username,
             "email": self.__email,
-            "password": self.__password
+            "password": self.__password,
+            "status": self.__status,
+            "role": self.__role,
+            "idAdmin": self.__idAdmin
         }
 
     def update_user_info(self, new_username, new_password, new_email):
