@@ -18,7 +18,7 @@ class GeneralManager:
             self.__initialized = True
             
     ###---------------- Métodos para la funcionalidad de GESTIÓN DE USUARIOS ----------------###
-    
+    ###         -------USUARIOS-------         ###
     def register_user(self, username, password, email):
         user_manager = UserManager()
         bien = user_manager.add_user(username, password, email)
@@ -38,6 +38,27 @@ class GeneralManager:
     def authenticate_user(self, username, password):
         user_manager = UserManager()
         return user_manager.authenticate_user(username, password)  
+    
+    def get_user_info(self):
+        user_manager = UserManager()
+        return user_manager.get_user_info()
+    
+    def get_all_users(self):
+        user_manager = UserManager()
+        return user_manager.get_all_users()
+    ###         -------ADMIN-------         ###
+    def delete_user(self, username):
+        user_manager = UserManager()
+        if user_manager.delete_user(username):
+            print("Usuario eliminado correctamente.")
+            db_manager_instance = DbManager()
+            if db_manager_instance.delete_user(username):
+                print("Usuario eliminado de la base de datos.")
+                return True
+            else:
+                print("Error al eliminar usuario de la base de datos.")
+                return False
+
     
     ###-------------------------------------------------------------------------------------###
     def rent_movie(self, user_id, movie_id):

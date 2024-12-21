@@ -1,6 +1,7 @@
 # user_management.py
 #import sqlite3
 #from CONTROLADOR.db_manager import create_connection  # Asumiendo que existe en otro lugar
+import json
 import requests
 import tkinter as tk
 from tkinter import messagebox
@@ -43,7 +44,6 @@ class UserManager:
         # 1: Usuario autenticado como administrador
         # 2: Usuario no encontrado o credenciales incorrectas
         # 3: Usuario pendiente de aprobación
-        
         for u in self.user_list:
             if u.its_me(username, password):
                 if u.accepted_by_admin():
@@ -54,7 +54,19 @@ class UserManager:
         return 2 # Usuario no encontrado o credenciales incorrectas
             
 
+    def get_all_users(self):
+        """Obtener lista de nombres de usuario"""
+        return [u.get_username() for u in self.user_list]
 
+    def delete_user(self, username):
+        """Eliminar un usuario de la lista"""
+        for u in self.user_list:
+            if u.user_with_name(username):
+                self.user_list.remove(u)
+                return True
+        return False
+
+    #! Esto está mal
     def get_user_info(self, username):
         """Obtener la información actual del usuario desde la base de datos"""
         cursor = self.connection.cursor()
@@ -65,13 +77,15 @@ class UserManager:
             return {'username': user[0], 'email': user[1]}
         return None
     
+    #! Esto está mal
     def get_user_id(self, username):
         """Obtiene el user_id a partir del nombre de usuario."""
         cursor = self.connection.cursor()
         cursor.execute("SELECT user_id FROM Usuarios WHERE username = ?", (username,))
         result = cursor.fetchone()
         return result[0] if result else None
-
+    
+    #! Esto está mal
     def update_user_info(self, current_username, new_username, new_email, new_password=None):
         """Actualizar la información del usuario"""
         cursor = self.connection.cursor()

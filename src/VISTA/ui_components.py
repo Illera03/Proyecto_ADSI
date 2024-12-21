@@ -192,7 +192,7 @@ class App:
             next_button = tk.Button(nav_frame, text="Siguiente", bg="grey", command=lambda: self.user_rent_movies(page+1))
             next_button.pack(side="right", padx=5)
 
-        tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
+        tk.Button(self.container, text="Volver", command=lambda: self.show_user_menu("user")).pack(pady=10)
         self.container.focus_force()  # Asegura que la ventana tenga el foco
  
     def user_view_rentals(self):
@@ -235,7 +235,7 @@ class App:
                 view_reviews_button.pack(pady=5)
         
         self.container.focus_force()  # Asegura que la ventana tenga el foco
-        tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
+        tk.Button(self.container, text="Volver", command=lambda: self.show_user_menu("user")).pack(pady=10)
 
     def add_review(self, movie_id):
         """Función para añadir una reseña"""
@@ -366,7 +366,7 @@ class App:
         self.container.focus_force()  # Asegura que la ventana tenga el foco
 
         # Obtener la información actual del usuario desde la base de datos
-        user_info = self.user_manager.get_user_info(self.logged_in_user)
+        user_info = self.general_manager.get_user_info()
 
         # Mostrar campos con los datos actuales
         tk.Label(self.container, text="Actualizar información personal").pack(pady=10)
@@ -386,21 +386,21 @@ class App:
         password_entry.pack()
 
         # Botón para guardar los cambios
-        tk.Button(self.container, text="Actualizar", command=lambda: self.update_user_info(username_entry.get(), email_entry.get(), password_entry.get())).pack(pady=10)
-        tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
+        tk.Button(self.container, text="Actualizar", command=lambda: self.update_user_info(username_entry.get(), email_entry.get(), password_entry.get(), "user")).pack(pady=10)
+        tk.Button(self.container, text="Volver", command=lambda: self.show_user_menu("user")).pack(pady=10)
         self.container.focus_force()  # Asegura que la ventana tenga el foco
 
-    def update_user_info(self, username, email, password):
+    def update_user_info(self, username, email, password, who):
         """Actualizar la información del usuario en la base de datos"""
         if password:
-            success = self.user_manager.update_user_info(self.logged_in_user, username, email, password)
+            success = self.user_manager.update_user_info(self.logged_in_user, username, email, password, who)
         else:
-            success = self.user_manager.update_user_info(self.logged_in_user, username, email)
+            success = self.user_manager.update_user_info(self.logged_in_user, username, email, who)
 
         if success:
             messagebox.showinfo("Éxito", "Datos actualizados correctamente.")
             self.container.focus_force()  # Asegura que la ventana tenga el foco
-            self.show_user_menu()
+            self.show_user_menu(who)
         else:
             messagebox.showerror("Error", "No se pudo actualizar la información.")
             self.container.focus_force()  # Asegura que la ventana tenga el foco
@@ -419,7 +419,7 @@ class App:
         tk.Button(self.container, text="Solicitar", command=lambda: self.request_movie_from_api(film_entry.get())).pack(pady=10)
 
         # Botón para volver al menú de usuario
-        tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
+        tk.Button(self.container, text="Volver", command=lambda: self.show_user_menu("user")).pack(pady=10)
         self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def request_movie_from_api(self, movie_title):
@@ -511,7 +511,7 @@ class App:
             next_button.pack(side="right", padx=5)
 
         # Botón para volver al menú principal (siempre visible)
-        tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
+        tk.Button(self.container, text="Volver", command=lambda: self.show_user_menu("admin")).pack(pady=10)
         self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def admin_manage_accounts(self, page=1):
@@ -521,13 +521,17 @@ class App:
         # Número de usuarios a mostrar por página
         items_per_page = 5
 
-        # Obtener todas las cuentas de usuario
-        all_users = self.admin_manager.get_all_users()
+        # Obtener todas las cuentas de usuario (lista de nombres de usuario)
+        all_users = self.general_manager.get_all_users()
         total_users = len(all_users)
+        print(all_users)
+        print(total_users)
 
         # Calcular el rango de usuarios a mostrar en esta página
         start_index = (page - 1) * items_per_page
         end_index = start_index + items_per_page
+
+        # Obtener los usuarios que se mostrarán en esta página
         users_to_show = all_users[start_index:end_index]
 
         # Etiqueta del título
@@ -535,16 +539,16 @@ class App:
 
         # Mostrar las cuentas de usuario de la página actual
         for user in users_to_show:
-            # Mostrar información del usuario
-            user_label = tk.Label(self.container, text=f"Usuario: {user[0]} - Email: {user[1]}", font=("Arial", 12))
+            # Mostrar el nombre del usuario
+            user_label = tk.Label(self.container, text=f"Usuario: {user}", font=("Arial", 12))
             user_label.pack(pady=5)
 
             # Botón para eliminar al usuario
-            delete_button = tk.Button(self.container, text="Eliminar", bg="red", command=lambda u=user[0]: self.delete_user(u))
+            delete_button = tk.Button(self.container, text="Eliminar", bg="red", command=lambda u=user: self.delete_user(u))
             delete_button.pack(pady=2)
 
             # Botón para modificar la información del usuario
-            modify_button = tk.Button(self.container, text="Modificar", bg="green", command=lambda u=user[0]: self.admin_modify_user_info(u))
+            modify_button = tk.Button(self.container, text="Modificar", bg="green", command=lambda u=user: self.admin_modify_user_info(u))
             modify_button.pack(pady=2)
 
         # Navegación entre páginas
@@ -562,8 +566,10 @@ class App:
             next_button.pack(side="right", padx=5)
 
         # Botón para volver al menú principal (siempre visible)
-        tk.Button(self.container, text="Volver", command=self.show_user_menu).pack(pady=10)
+        tk.Button(self.container, text="Volver", command=lambda: self.show_user_menu("admin")).pack(pady=10)
         self.container.focus_force()  # Asegura que la ventana tenga el foco
+
+
 
     def accept_user(self, username):
         """Aceptar solicitud de registro"""
@@ -581,8 +587,10 @@ class App:
     
     def delete_user(self, username):
         """Eliminar un usuario de la base de datos"""
-        self.admin_manager.delete_user(username)
-        messagebox.showinfo("Información", f"Usuario {username} eliminado.")
+        if self.general_manager.delete_user(username):
+            messagebox.showinfo("Información", f"Usuario {username} eliminado.")
+        else:
+            messagebox.showerror("Error", f"No se pudo eliminar al usuario {username}.")
         self.admin_manage_accounts()
         self.container.focus_force()  # Asegura que la ventana tenga el foco
     
@@ -618,9 +626,9 @@ class App:
     def update_user_info_admin(self, original_username, new_username, email, password):
         """Actualizar la información de un usuario como administrador"""
         if password:
-            success = self.user_manager.update_user_info(original_username, new_username, email, password)
+            success = self.user_manager.update_user_info(original_username, new_username, email, password, "admin")
         else:
-            success = self.user_manager.update_user_info(original_username, new_username, email)
+            success = self.user_manager.update_user_info(original_username, new_username, email, "admin")
 
         if success:
             messagebox.showinfo("Éxito", f"Datos de {original_username} actualizados correctamente.")

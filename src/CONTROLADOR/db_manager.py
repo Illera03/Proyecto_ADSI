@@ -64,6 +64,18 @@ class DbManager:
         
         # TODO Cargar datos de películas, alquileres, etc..."""
         user_manager.print_users()
+    
+    def delete_user(self, username):
+        """ Eliminar un usuario de la base de datos """
+        self.create_connection()
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute("DELETE FROM Usuarios WHERE username = ?", (username,))
+            self.conn.commit()
+            return True
+        except sqlite3.IntegrityError as e:
+            print(f"Error al eliminar usuario: {e}")
+            return False
 
     def create_tables(self):
         """ Crear las tablas necesarias en la base de datos """
