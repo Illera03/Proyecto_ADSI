@@ -16,20 +16,6 @@ class UserManager:
             cls._instance.user_list = []  # Lista de usuarios
         return cls._instance
 
-
-    # # def create_connection(self):
-    # #     """Crea una conexión a la base de datos SQLite"""
-    # #     conn = None
-    # #     try:
-    # #         conn = sqlite3.connect(self.db_file)
-    # #     except sqlite3.Error as e:
-    # #         print(f"Error al conectar con la base de datos: {e}")
-    # #     return conn
-    
-    def getUser():
-        
-        return 0
-
     def add_user(self, username, password, email): #TODO ESTÁ BIEN?
         """Añadir un nuevo usuario a la lista de usuarios."""
         for u in self.user_list:
@@ -48,44 +34,26 @@ class UserManager:
                 print("Ya hay un usuario con ese nombre")
                 return False 
         self.user_list.append(user.User.new_user_from_bd(username=username, password=password, email=email, status=status, role=role, idAdmin=idAdmin))
-    
-    # def register_user(self, username, password, email, role="user"):
-    #     """Registrar un nuevo usuario en la base de datos."""
-    #     cursor = self.connection.cursor()
-        
-    #     # Si el usuario es 'admin', le asignamos el rol de administrador
-    #     if username.lower() == "_admin_":
-    #         role = "admin"
-    #     try:
-    #         # Añadimos la columna `status` con valor inicial "pendiente" para usuarios no administradores
-    #         if role == "admin":
-    #             cursor.execute("INSERT INTO Usuarios (username, password, email, role, status) VALUES (?, ?, ?, ?, 'aceptado')", 
-    #                         (username, password, email, role))
-    #         else:
-    #             cursor.execute("INSERT INTO Usuarios (username, password, email, role, status) VALUES (?, ?, ?, ?, 'pendiente')", 
-    #                         (username, password, email, role))
-    #         self.connection.commit()
-    #         return True
-    #     except sqlite3.IntegrityError:
-    #         return False
 
     def authenticate_user(self, username, password):
         """Autenticar un usuario en la base de datos."""
-        cursor = self.connection.cursor()
-
-        # Verificar si el usuario existe con las credenciales dadas
-        cursor.execute("SELECT username, role, status FROM Usuarios WHERE username = ? AND password = ?", 
-                    (username, password))
         
-        user = cursor.fetchone()  # Devuelve una tupla con el usuario, rol y estado
+        # Código de respuestas:
+        # 0: Usuario autenticado
+        # 1: Usuario autenticado como administrador
+        # 2: Usuario no encontrado o credenciales incorrectas
+        # 3: Usuario pendiente de aprobación
+        
+        for u in self.user_list:
+            if u.its_me(username, password):
+                if u.accepted_by_admin():
+                    if u.is_admin(): # Credenciales correctas y es admin
+                        return 1
+                    else: return 0 # Credenciales correctas y es user
+                else: return 3 # Usuario pendiente de aprobación
+        return 2 # Usuario no encontrado o credenciales incorrectas
+            
 
-        if user:  # Si el usuario fue encontrado
-            if user[2] == "aceptado":  # Si su estado es 'aceptado'
-                return {"username": user[0], "role": user[1]}
-            else:
-                return "pendiente"  # Si no está aceptado aún
-        else:
-            return None  # Si no se encontraron credenciales válidas
 
     def get_user_info(self, username):
         """Obtener la información actual del usuario desde la base de datos"""
@@ -116,6 +84,7 @@ class UserManager:
         self.connection.commit()
         return True
     
+    ###! ???? ESTO NO VA AQUÍ, VA EN OTRA CLASE--------------------------------------
     def create_movie_request(self, username, movie_title):
         """Crea una solicitud de película en la base de datos."""
         cursor = self.connection.cursor()
@@ -143,6 +112,7 @@ class UserManager:
         else:
             messagebox.showerror("Error", "No se pudo conectar con OMDb API.")
             return None
+    ###! ----------------------------------------------------------------------------
         
 
     def close_connection(self):

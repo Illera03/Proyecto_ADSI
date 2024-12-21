@@ -31,7 +31,7 @@ class User:
         return self.__username == username and self.__password == password
 
     def accepted_by_admin(self):
-        return self.__status == "aceptada"
+        return self.__status == "aceptado"
 
     def get_user_info(self):
         return {
@@ -50,7 +50,7 @@ class User:
         return True
 
     def change_status(self):
-        self.__status = "aceptada" if self.__status == "pendiente" else "pendiente"
+        self.__status = "aceptado" if self.__status == "pendiente" else "pendiente"
         return True
 
     def pending_user(self):
@@ -58,3 +58,6 @@ class User:
 
     def get_username(self):
         return self.__username
+    
+    def is_admin(self):
+        return self.__role == "admin"

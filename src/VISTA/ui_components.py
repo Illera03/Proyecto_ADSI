@@ -95,37 +95,41 @@ class App:
 
     def login_user(self, username, password):
         """Inicia sesión"""
-        user = self.user_manager.authenticate_user(username, password)
+        resul = self.general_manager.authenticate_user(username, password)
         
-        if user == "pendiente":
+        if resul == 3:
             messagebox.showwarning("Pendiente", "Tu solicitud de registro está pendiente de aceptación por un administrador.")
             self.container.focus_force()  # Asegura que la ventana tenga el foco
-        elif user:
-            # Guardar el usuario y su rol
-            self.logged_in_user = user['username']
-            self.logged_in_role = user['role']  # Supongamos que el rol está en la columna 'role'
-
-            messagebox.showinfo("Éxito", f"Inicio de sesión exitoso. Rol: {self.logged_in_role}")
-            self.show_user_menu()  # Mostrar las opciones dependiendo del rol
+        elif resul == 2:
+            messagebox.showerror("Error", "Credenciales incorrectas")
             self.container.focus_force()  # Asegura que la ventana tenga el foco
         else:
-            messagebox.showerror("Error", "Credenciales incorrectas")
+            # Guardar el usuario y su rol
+            # self.logged_in_user = user['username']
+            # self.logged_in_role = user['role']  # Supongamos que el rol está en la columna 'role'
+            messagebox.showinfo("Éxito", f"Inicio de sesión exitoso. Rol: " + ("admin" if resul == 1 else "user"))
+
+            if resul == 1:
+                self.show_user_menu("admin")  # Enseñar el menú de administrador
+            else:
+                self.show_user_menu("user")
             self.container.focus_force()  # Asegura que la ventana tenga el foco
 
         self.container.focus_force()  # Asegura que la ventana tenga el foco
 
-    def show_user_menu(self):
+    def show_user_menu(self, role):
+        #TODO CAMBIAR
         """Muestra el menú de opciones según el rol"""
         self.clear_frame()
         self.container.focus_force()  # Asegura que la ventana tenga el foco
 
-        tk.Label(self.container, text=f"Bienvenido, {self.logged_in_user}").pack(pady=10)
+        tk.Label(self.container, text=f"Bienvenido").pack(pady=10)
 
-        if self.logged_in_role == "admin":
+        if role == "admin":
             tk.Button(self.container, text="Gestión de peticiones", command=self.admin_manage_users).pack(pady=10)
             tk.Button(self.container, text="Gestión de cuentas", command=self.admin_manage_accounts).pack(pady=10)
         
-        if self.logged_in_role == "user":
+        if role == "user":
             tk.Button(self.container, text="Alquilar películas", command=self.user_rent_movies).pack(pady=10)
             tk.Button(self.container, text="Ver mis alquileres", command=self.user_view_rentals).pack(pady=10)
             tk.Button(self.container, text="Actualizar datos personales", command=self.user_update_info).pack(pady=10)

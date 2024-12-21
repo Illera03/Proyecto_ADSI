@@ -16,7 +16,9 @@ class GeneralManager:
     def __init__(self):
         if not self.__initialized:
             self.__initialized = True
-
+            
+    ###---------------- Métodos para la funcionalidad de GESTIÓN DE USUARIOS ----------------###
+    
     def register_user(self, username, password, email):
         user_manager = UserManager()
         bien = user_manager.add_user(username, password, email)
@@ -33,7 +35,11 @@ class GeneralManager:
         else:
             print("Error al agregar usuario.")
             return False
-
+    def authenticate_user(self, username, password):
+        user_manager = UserManager()
+        return user_manager.authenticate_user(username, password)  
+    
+    ###-------------------------------------------------------------------------------------###
     def rent_movie(self, user_id, movie_id):
             """Alquilar una película"""
             return AlquilerManager.rent_movie(user_id, movie_id,fecha_alquiler=datetime.date.today())
