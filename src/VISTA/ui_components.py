@@ -599,7 +599,7 @@ class App:
         self.clear_frame()
 
         # Obtener la información actual del usuario desde la base de datos
-        user_info = self.user_manager.get_user_info(username)
+        user_info = self.general_manager.admin_get_user_info(username)
 
         # Mostrar campos con los datos actuales
         tk.Label(self.container, text=f"Modificar datos de {username}").pack(pady=10)
@@ -626,9 +626,9 @@ class App:
     def update_user_info_admin(self, original_username, new_username, email, password):
         """Actualizar la información de un usuario como administrador"""
         if password:
-            success = self.user_manager.update_user_info(original_username, new_username, email, password, "admin")
+            success = self.general_manager.admin_update_user_info(original_username, new_username, email, password)
         else:
-            success = self.user_manager.update_user_info(original_username, new_username, email, "admin")
+            success = self.general_manager.admin_update_user_info(original_username, new_username, email)
 
         if success:
             messagebox.showinfo("Éxito", f"Datos de {original_username} actualizados correctamente.")

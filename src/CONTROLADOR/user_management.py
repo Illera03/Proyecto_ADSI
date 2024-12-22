@@ -75,6 +75,13 @@ class UserManager:
                 return u.get_user_info()
         return None
     
+    def admin_get_user_info(self, username):
+        """Obtener información de un usuario específico"""
+        for u in self.user_list:
+            if u.user_with_name(username):
+                return u.get_all_user_info()
+        return None
+    
     def update_user_info(self, new_username, new_email, new_password=None):
         """Actualizar la información del usuario actual"""
 
@@ -95,6 +102,25 @@ class UserManager:
         self.current_user = new_username  # Actualizar el nombre de usuario actual
         print(new_username)
         return old_username
+    
+    def admin_update_user_info(self, old_username, new_username, new_email, new_password=None):
+        """Actualizar la información del usuario actual"""
+
+        # Verificar si el nuevo nombre de usuario ya está en uso
+        if new_username != old_username:
+            for u in self.user_list:
+                if u.user_with_name(new_username):
+                    return "error"  # Nombre de usuario ya en uso
+
+        # Buscar al usuario actual
+        user = next((u for u in self.user_list if u.user_with_name(old_username)), None)
+        if not user:
+            return "error"  # Usuario actual no encontrado
+
+        # Actualizar la información del usuario
+        user.update_user_info(new_username, new_email, new_password)
+        print(new_username)
+        return True
 
         
     #! Esto está mal

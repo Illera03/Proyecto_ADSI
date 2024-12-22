@@ -73,6 +73,11 @@ class GeneralManager:
                     return False
                 
     ###         -------ADMIN-------         ###
+
+    def admin_get_user_info(self, username):
+        user_manager = UserManager()
+        return user_manager.admin_get_user_info(username)
+    
     def delete_user(self, username):
         user_manager = UserManager()
         if user_manager.delete_user(username):
@@ -85,6 +90,30 @@ class GeneralManager:
                 print("Error al eliminar usuario de la base de datos.")
                 return False
 
+    def admin_update_user_info(self, old_username, new_username, new_email, new_password = None):
+        user_manager = UserManager()
+        resul = False
+        if new_password:
+            resul = user_manager.admin_update_user_info(old_username, new_username, new_email, new_password)
+        else:
+            resul = user_manager.admin_update_user_info(old_username, new_username, new_email)
+        if resul:
+            print("Usuario actualizado correctamente.")
+            db_manager_instance = DbManager()
+            if new_password:
+                if db_manager_instance.update_user(old_username, new_username, new_email, new_password):
+                    print("Usuario actualizado en la base de datos.")
+                    return True
+                else:
+                    print("Error al actualizar usuario en la base de datos.")
+                    return False
+            else:
+                if db_manager_instance.update_user(old_username, new_username, new_email):
+                    print("Usuario actualizado en la base de datos.")
+                    return True
+                else:
+                    print("Error al actualizar usuario en la base de datos.")
+                    return False
     
     ###-------------------------------------------------------------------------------------###
     def rent_movie(self, user_id, movie_id):
