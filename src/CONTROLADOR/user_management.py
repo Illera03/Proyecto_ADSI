@@ -45,6 +45,7 @@ class UserManager:
         # 1: Usuario autenticado como administrador
         # 2: Usuario no encontrado o credenciales incorrectas
         # 3: Usuario pendiente de aprobación
+        # 4: Usuario rechazado
         for u in self.user_list:
             if u.its_me(username, password):
                 if u.accepted_by_admin():
@@ -52,7 +53,10 @@ class UserManager:
                     if u.is_admin(): # Credenciales correctas y es admin
                         return 1
                     else: return 0 # Credenciales correctas y es user
-                else: return 3 # Usuario pendiente de aprobación
+                elif u.pending_user():
+                    return 3 # Usuario pendiente de aprobación
+                else:
+                    return 4 # Usuario rechazado
         return 2 # Usuario no encontrado o credenciales incorrectas
             
 
@@ -62,6 +66,8 @@ class UserManager:
 
     def delete_user(self, username):
         """Eliminar un usuario de la lista"""
+        if username == self.current_user:
+            return False  # No se puede eliminar a si mismo.
         for u in self.user_list:
             if u.user_with_name(username):
                 self.user_list.remove(u)
@@ -122,7 +128,29 @@ class UserManager:
         print(new_username)
         return True
 
-        
+    def get_pending_users(self):
+        """Obtener lista de usuarios pendientes de aprobación"""
+        return [u.get_username() for u in self.user_list if u.pending_user()]
+    
+    def accept_user(self, username):
+        """Aceptar un usuario pendiente de aprobación"""
+        for u in self.user_list:
+            if u.user_with_name(username):
+                u.accept_user()
+                for admin in self.user_list:
+                    if admin.user_with_name(self.current_user): # Buscar al admin actual (que es el usuario logueado)
+                        admin.add_accepted_user(u) # Agregar al usuario aceptado a la lista de usuarios aceptados por el admin
+                        return self.current_user
+        return -1  # Usuario no encontrado
+    
+    def reject_user(self, username):
+        """Rechazar un usuario pendiente de aprobación"""
+        for u in self.user_list:
+            if u.user_with_name(username):
+                u.reject_user()
+                return self.current_user
+        return -1
+    
     #! Esto está mal
     def get_user_id(self, username):
         """Obtiene el user_id a partir del nombre de usuario."""

@@ -3,12 +3,14 @@ class User:
         self.__username = username
         self.__password = password
         self.__email = email
-        self.__status = "pendiente"
         if self.__username == "_admin_":
             self.__role = "admin"
+            self.__status = "aceptado"
         else:
             self.__role = "user"
+            self.__status = "pendiente"
         self.__idAdmin = None
+        self.__whoAccepted = []
 
     @staticmethod
     def new_user(username, password, email):
@@ -56,8 +58,13 @@ class User:
             self.__password = new_password
         return True
 
-    def change_status(self):
-        self.__status = "aceptado" if self.__status == "pendiente" else "pendiente"
+    def accept_user(self):
+        self.__status = "aceptado"
+        return True
+    
+    def reject_user(self):
+        print("Usuario rechazado: " + self.__username)
+        self.__status = "rechazado"
         return True
 
     def pending_user(self):
@@ -68,3 +75,8 @@ class User:
     
     def is_admin(self):
         return self.__role == "admin"
+    
+    def add_accepted_user(self, user):
+        self.__whoAccepted.append(user)
+        print("Usuarios aceptados por: " + self.__username)
+        print([u.get_username() for u in self.__whoAccepted])

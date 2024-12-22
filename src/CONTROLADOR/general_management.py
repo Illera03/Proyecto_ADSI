@@ -115,6 +115,51 @@ class GeneralManager:
                     print("Error al actualizar usuario en la base de datos.")
                     return False
     
+    def get_pending_users(self):
+        user_manager = UserManager()
+        return user_manager.get_pending_users()
+    
+    def accept_user(self, username):
+        user_manager = UserManager()
+        admin_username = user_manager.accept_user(username)
+        if admin_username != -1:
+            print("Usuario aceptado correctamente.")
+            db_manager_instance = DbManager()
+            
+            if db_manager_instance.save_admin(admin_username, username):
+                print("Admin guardado como aceptador del usuario en la base de datos.")
+                
+                if db_manager_instance.accept_user(username):
+                    print("Usuario aceptado en la base de datos.")
+                    return True
+                else:
+                    print("Error al aceptar usuario en la base de datos.")
+                    return False
+            else:
+                print("Error al guardar al admin como aceptador del usuario en la base de datos.")
+                return False
+            
+            
+    def reject_user(self, username):
+        user_manager = UserManager()
+        admin_username = user_manager.reject_user(username)
+        if admin_username != -1:
+            print("Usuario aceptado correctamente.")
+            db_manager_instance = DbManager()
+            if db_manager_instance.save_admin(admin_username, username):
+                print("Admin guardado como rechazador del usuario en la base de datos.")
+                
+                if db_manager_instance.reject_user(username):
+                    print("Usuario rechazado en la base de datos.")
+                    return True
+                else:
+                    print("Error al rechazar usuario en la base de datos.")
+                    return False
+            else:
+                print("Error al guardar al admin como rechazador del usuario en la base de datos.")
+                return False
+            
+    
     ###-------------------------------------------------------------------------------------###
     def rent_movie(self, user_id, movie_id):
             """Alquilar una película"""

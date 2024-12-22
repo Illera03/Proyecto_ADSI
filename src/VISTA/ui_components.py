@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
 from CONTROLADOR.user_management import UserManager
-from CONTROLADOR.admin_management import AdminManager
 from CONTROLADOR.movie_management import MovieManager
 from review_management import ReviewManager
 from CONTROLADOR.general_management import GeneralManager
@@ -16,9 +15,6 @@ class App:
 
          #Inicializar ReviewManager
         self.review_manager = ReviewManager("data/video_club.db")
-        
-        #Inicializar AdminManager
-        self.admin_manager = AdminManager("data/video_club.db") #TODO CAMBIAR
 
         # Inicializar UserManager
         self.user_manager = UserManager()
@@ -97,16 +93,16 @@ class App:
         """Inicia sesión"""
         resul = self.general_manager.authenticate_user(username, password)
         
-        if resul == 3:
+        if resul == 4:
+            messagebox.showerror("Error", "Tu solicitud de registro ha sido rechazada.")
+            self.container.focus_force()
+        elif resul == 3:
             messagebox.showwarning("Pendiente", "Tu solicitud de registro está pendiente de aceptación por un administrador.")
             self.container.focus_force()  # Asegura que la ventana tenga el foco
         elif resul == 2:
             messagebox.showerror("Error", "Credenciales incorrectas")
             self.container.focus_force()  # Asegura que la ventana tenga el foco
         else:
-            # Guardar el usuario y su rol
-            # self.logged_in_user = user['username']
-            # self.logged_in_role = user['role']  # Supongamos que el rol está en la columna 'role'
             messagebox.showinfo("Éxito", f"Inicio de sesión exitoso. Rol: " + ("admin" if resul == 1 else "user"))
 
             if resul == 1:
@@ -468,7 +464,7 @@ class App:
         items_per_page = 5
 
         # Obtener lista de usuarios pendientes
-        pending_users = self.admin_manager.get_pending_users()
+        pending_users = self.general_manager.get_pending_users()
         total_users = len(pending_users)
 
         # Calcular el rango de usuarios a mostrar en esta página
@@ -484,16 +480,16 @@ class App:
             tk.Label(self.container, text="No hay más solicitudes pendientes").pack(pady=5)
         else:
             for user in users_to_show:
-                # Mostrar información del usuario
-                user_label = tk.Label(self.container, text=f"Usuario: {user[0]} - Email: {user[1]}", font=("Arial", 12))
+                # Mostrar el nombre del usuario
+                user_label = tk.Label(self.container, text=f"Usuario: {user}", font=("Arial", 12))
                 user_label.pack(pady=5)
 
                 # Botón para aceptar el usuario
-                accept_button = tk.Button(self.container, text="Aceptar", bg="green", command=lambda u=user[0]: self.accept_user(u))
+                accept_button = tk.Button(self.container, text="Aceptar", bg="green", command=lambda u=user: self.accept_user(u))
                 accept_button.pack(pady=2)
 
                 # Botón para rechazar el usuario
-                reject_button = tk.Button(self.container, text="Rechazar", bg="red", command=lambda u=user[0]: self.reject_user(u))
+                reject_button = tk.Button(self.container, text="Rechazar", bg="red", command=lambda u=user: self.reject_user(u))
                 reject_button.pack(pady=2)
 
         # Navegación entre páginas
@@ -524,8 +520,6 @@ class App:
         # Obtener todas las cuentas de usuario (lista de nombres de usuario)
         all_users = self.general_manager.get_all_users()
         total_users = len(all_users)
-        print(all_users)
-        print(total_users)
 
         # Calcular el rango de usuarios a mostrar en esta página
         start_index = (page - 1) * items_per_page
@@ -573,14 +567,14 @@ class App:
 
     def accept_user(self, username):
         """Aceptar solicitud de registro"""
-        self.admin_manager.accept_user(username)
+        self.general_manager.accept_user(username)
         messagebox.showinfo("Éxito", f"Usuario {username} aceptado.")
         self.admin_manage_users()
         self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def reject_user(self, username):
         """Rechazar solicitud de registro"""
-        self.admin_manager.reject_user(username)
+        self.general_manager.reject_user(username)
         messagebox.showinfo("Información", f"Usuario {username} rechazado.")
         self.admin_manage_users()
         self.container.focus_force()  # Asegura que la ventana tenga el foco

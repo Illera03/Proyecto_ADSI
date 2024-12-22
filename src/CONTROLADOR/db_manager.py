@@ -90,6 +90,44 @@ class DbManager:
             return True
         except sqlite3.IntegrityError as e:
             print(f"Error al actualizar usuario: {e}")
+            
+    def save_admin(self, admin_username, username):
+        """ Guardar el id del admin que aceptó o rechazó al usuario con el username dado en el usuario correspondiente """
+        self.create_connection()
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute("SELECT user_id FROM Usuarios WHERE username = ?", (admin_username,))
+            admin_id = cursor.fetchone()[0]
+            cursor.execute("UPDATE Usuarios SET idAdmin = ? WHERE username = ?", (admin_id, username))
+            self.conn.commit()
+            return True
+        except sqlite3.IntegrityError as e:
+            print(f"Error al guardar admin que aceptó usuario: {e}")
+            return False
+        
+    def accept_user(self, username):
+        """ Cambiar el estado de un usuario a 'aceptado' """
+        self.create_connection()
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute("UPDATE Usuarios SET status = 'aceptado' WHERE username = ?", (username,))
+            self.conn.commit()
+            return True
+        except sqlite3.IntegrityError as e:
+            print(f"Error al aceptar usuario: {e}")
+            return False
+    
+    def reject_user(self, username):
+        """ Cambiar el estado de un usuario a 'rechazado' """
+        self.create_connection()
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute("UPDATE Usuarios SET status = 'rechazado' WHERE username = ?", (username,))
+            self.conn.commit()
+            return True
+        except sqlite3.IntegrityError as e:
+            print(f"Error al rechazar usuario: {e}")
+            return False
 
     def create_tables(self):
         """ Crear las tablas necesarias en la base de datos """
