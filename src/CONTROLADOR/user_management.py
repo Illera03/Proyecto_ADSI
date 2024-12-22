@@ -15,6 +15,7 @@ class UserManager:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance.user_list = []  # Lista de usuarios
+            cls._instance.current_user = None  # Usuario actualmente logueado
         return cls._instance
 
     def add_user(self, username, password, email): #TODO ESTÁ BIEN?
@@ -47,6 +48,7 @@ class UserManager:
         for u in self.user_list:
             if u.its_me(username, password):
                 if u.accepted_by_admin():
+                    self.current_user = username  # Actualizar el usuario logueado
                     if u.is_admin(): # Credenciales correctas y es admin
                         return 1
                     else: return 0 # Credenciales correctas y es user
@@ -66,17 +68,35 @@ class UserManager:
                 return True
         return False
 
-    #! Esto está mal
-    def get_user_info(self, username):
-        """Obtener la información actual del usuario desde la base de datos"""
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT username, email FROM Usuarios WHERE username = ?", (username,))
-        user = cursor.fetchone()
-
-        if user:
-            return {'username': user[0], 'email': user[1]}
+    def get_user_info(self):
+        """Obtener información del usuario actual"""
+        for u in self.user_list:
+            if u.user_with_name(self.current_user):
+                return u.get_user_info()
         return None
     
+    def update_user_info(self, new_username, new_email, new_password=None):
+        """Actualizar la información del usuario actual"""
+
+        # Verificar si el nuevo nombre de usuario ya está en uso
+        if new_username != self.current_user:
+            for u in self.user_list:
+                if u.user_with_name(new_username):
+                    return "error"  # Nombre de usuario ya en uso
+
+        # Buscar al usuario actual
+        user = next((u for u in self.user_list if u.user_with_name(self.current_user)), None)
+        if not user:
+            return "error"  # Usuario actual no encontrado
+
+        # Actualizar la información del usuario
+        user.update_user_info(new_username, new_email, new_password)
+        old_username = self.current_user
+        self.current_user = new_username  # Actualizar el nombre de usuario actual
+        print(new_username)
+        return old_username
+
+        
     #! Esto está mal
     def get_user_id(self, username):
         """Obtiene el user_id a partir del nombre de usuario."""
@@ -85,18 +105,6 @@ class UserManager:
         result = cursor.fetchone()
         return result[0] if result else None
     
-    #! Esto está mal
-    def update_user_info(self, current_username, new_username, new_email, new_password=None):
-        """Actualizar la información del usuario"""
-        cursor = self.connection.cursor()
-        if new_password:
-            cursor.execute("UPDATE Usuarios SET username = ?, email = ?, password = ? WHERE username = ?",
-                           (new_username, new_email, new_password, current_username))
-        else:
-            cursor.execute("UPDATE Usuarios SET username = ?, email = ? WHERE username = ?",
-                           (new_username, new_email, current_username))
-        self.connection.commit()
-        return True
     
     ###! ???? ESTO NO VA AQUÍ, VA EN OTRA CLASE--------------------------------------
     def create_movie_request(self, username, movie_title):
@@ -139,7 +147,7 @@ class UserManager:
         print("\nDatos cargados de la base de datos:\n")
         print("---------------------------------------------------------------------------------------------------------------------------------")
         for user in self.user_list:
-            print(user.get_user_info())
+            print(user.get_all_user_info())
             print("---------------------------------------------------------------------------------------------------------------------------------")
 
 

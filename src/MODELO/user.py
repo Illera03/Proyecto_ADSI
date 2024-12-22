@@ -32,8 +32,14 @@ class User:
 
     def accepted_by_admin(self):
         return self.__status == "aceptado"
-
+    
     def get_user_info(self):
+        return {
+            "username": self.__username,
+            "email": self.__email
+            }
+
+    def get_all_user_info(self):
         return {
             "username": self.__username,
             "email": self.__email,
@@ -43,10 +49,11 @@ class User:
             "idAdmin": self.__idAdmin
         }
 
-    def update_user_info(self, new_username, new_password, new_email):
+    def update_user_info(self, new_username, new_email, new_password = None):
         self.__username = new_username
-        self.__password = new_password
         self.__email = new_email
+        if new_password:
+            self.__password = new_password
         return True
 
     def change_status(self):

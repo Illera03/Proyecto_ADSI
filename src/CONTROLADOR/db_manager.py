@@ -76,6 +76,20 @@ class DbManager:
         except sqlite3.IntegrityError as e:
             print(f"Error al eliminar usuario: {e}")
             return False
+        
+    def update_user(self, oldUsername, newUsername, email, password=None):
+        """ Actualizar la información de un usuario en la base de datos """
+        self.create_connection()
+        cursor = self.conn.cursor()
+        try:
+            if password:
+                cursor.execute("UPDATE Usuarios SET username = ?, email = ?, password = ? WHERE username = ?", (newUsername, email, password, oldUsername))
+            else:
+                cursor.execute("UPDATE Usuarios SET username = ?, email = ? WHERE username = ?", (newUsername, email, oldUsername))
+            self.conn.commit()
+            return True
+        except sqlite3.IntegrityError as e:
+            print(f"Error al actualizar usuario: {e}")
 
     def create_tables(self):
         """ Crear las tablas necesarias en la base de datos """

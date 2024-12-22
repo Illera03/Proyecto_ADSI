@@ -393,9 +393,9 @@ class App:
     def update_user_info(self, username, email, password, who):
         """Actualizar la información del usuario en la base de datos"""
         if password:
-            success = self.user_manager.update_user_info(self.logged_in_user, username, email, password, who)
+            success = self.general_manager.update_user_info(username, email, password)
         else:
-            success = self.user_manager.update_user_info(self.logged_in_user, username, email, who)
+            success = self.general_manager.update_user_info(username, email)
 
         if success:
             messagebox.showinfo("Éxito", "Datos actualizados correctamente.")

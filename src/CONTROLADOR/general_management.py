@@ -46,6 +46,32 @@ class GeneralManager:
     def get_all_users(self):
         user_manager = UserManager()
         return user_manager.get_all_users()
+    
+    def update_user_info(self, new_username, new_email, new_password = None):
+        user_manager = UserManager()
+        resul = False
+        if new_password:
+            resul = user_manager.update_user_info(new_username, new_email, new_password)
+        else:
+            resul = user_manager.update_user_info(new_username, new_email)
+        if resul != "error":
+            print("Usuario actualizado correctamente.")
+            db_manager_instance = DbManager()
+            if new_password:
+                if db_manager_instance.update_user(resul, new_username, new_email, new_password):
+                    print("Usuario actualizado en la base de datos.")
+                    return True
+                else:
+                    print("Error al actualizar usuario en la base de datos.")
+                    return False
+            else:
+                if db_manager_instance.update_user(resul, new_username, new_email):
+                    print("Usuario actualizado en la base de datos.")
+                    return True
+                else:
+                    print("Error al actualizar usuario en la base de datos.")
+                    return False
+                
     ###         -------ADMIN-------         ###
     def delete_user(self, username):
         user_manager = UserManager()
