@@ -18,7 +18,7 @@ class UserManager:
             cls._instance.current_user = None  # Usuario actualmente logueado
         return cls._instance
 
-    def add_user(self, username, password, email): #TODO ESTÁ BIEN?
+    def add_user(self, username, password, email):
         """Añadir un nuevo usuario a la lista de usuarios."""
         for u in self.user_list:
             repetido = u.user_with_name(username)
@@ -28,7 +28,7 @@ class UserManager:
         self.user_list.append(user.User.new_user(username, password, email))
         return True
     
-    def add_user_from_bd(self, username, password, email, role, status, idAdmin): #TODO ESTÁ BIEN?
+    def add_user_from_bd(self, username, password, email, role, status, idAdmin): 
         """Añadir un nuevo usuario a la lista de usuarios."""
         for u in self.user_list:
             repetido = u.user_with_name(username)
@@ -158,8 +158,29 @@ class UserManager:
         for user in self.user_list:
             print(user.get_all_user_info())
             print("---------------------------------------------------------------------------------------------------------------------------------")
-            
-            
+    
+    #Métodos para pruebas
+    
+    def exists_user(self, username):
+        """Verificar si un usuario existe en la lista"""
+        for u in self.user_list:
+            if u.user_with_name(username):
+                return True
+        return False    
+    
+    def empty_user_list(self):
+        """Vaciar la lista de usuarios"""
+        self.user_list = []
+    def change_current_user(self, username):
+        """Cambiar el usuario actual"""
+        self.current_user = username
+    
+    # def get_user(self, username):
+    #     """Obtener un usuario específico"""
+    #     for u in self.user_list:
+    #         if u.user_with_name(username):
+    #             return u.get_all_user_info()
+    #     return None        
             
     #! ---------------------------------------------------------------------------------------------------------------------------------------------------------        
     #! Esto está mal

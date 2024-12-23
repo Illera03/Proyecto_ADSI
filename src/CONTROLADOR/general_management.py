@@ -71,6 +71,9 @@ class GeneralManager:
                 else:
                     print("Error al actualizar usuario en la base de datos.")
                     return False
+        else:
+            print("Error al actualizar usuario.")
+            return False
                 
     ###         -------ADMIN-------         ###
 
@@ -158,8 +161,6 @@ class GeneralManager:
             else:
                 print("Error al guardar al admin como rechazador del usuario en la base de datos.")
                 return False
-            
-    
     ###-------------------------------------------------------------------------------------###
     def rent_movie(self, user_id, movie_id):
             """Alquilar una película"""

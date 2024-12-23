@@ -72,6 +72,7 @@ class DbManager:
         try:
             cursor.execute("DELETE FROM Usuarios WHERE username = ?", (username,))
             self.conn.commit()
+            print(f"Usuario {username} eliminado")
             return True
         except sqlite3.IntegrityError as e:
             print(f"Error al eliminar usuario: {e}")
@@ -128,6 +129,7 @@ class DbManager:
         except sqlite3.IntegrityError as e:
             print(f"Error al rechazar usuario: {e}")
             return False
+        
 
     def create_tables(self):
         """ Crear las tablas necesarias en la base de datos """
@@ -212,4 +214,18 @@ class DbManager:
         ''')
         self.conn.commit()
 
+    # Métodos para pruebas
 
+    def exists_user(self, username):
+        """Verificar si un usuario existe en la bd"""
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM Usuarios WHERE username = ?", (username,))
+        result = cursor.fetchone()
+        return result is not None
+    
+    def get_user(self, username):
+        """Obtener un usuario de la bd"""
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM Usuarios WHERE username = ?", (username,))
+        result = cursor.fetchone()
+        return result
