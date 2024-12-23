@@ -151,6 +151,17 @@ class UserManager:
                 return self.current_user
         return -1
     
+    def print_users(self):
+        """Imprimir la lista de usuarios."""
+        print("\nDatos cargados de la base de datos:\n")
+        print("---------------------------------------------------------------------------------------------------------------------------------")
+        for user in self.user_list:
+            print(user.get_all_user_info())
+            print("---------------------------------------------------------------------------------------------------------------------------------")
+            
+            
+            
+    #! ---------------------------------------------------------------------------------------------------------------------------------------------------------        
     #! Esto está mal
     def get_user_id(self, username):
         """Obtiene el user_id a partir del nombre de usuario."""
@@ -190,37 +201,9 @@ class UserManager:
             return None
     ###! ----------------------------------------------------------------------------
         
-
+    # ! Esto también está mal
     def close_connection(self):
         """Cerrar la conexión a la base de datos."""
         if self.connection:
             self.connection.close()
     
-    def print_users(self):
-        """Imprimir la lista de usuarios."""
-        print("\nDatos cargados de la base de datos:\n")
-        print("---------------------------------------------------------------------------------------------------------------------------------")
-        for user in self.user_list:
-            print(user.get_all_user_info())
-            print("---------------------------------------------------------------------------------------------------------------------------------")
-
-
-
-
-# Ejemplo de uso
-# if __name__ == "__main__":
-#     user_manager = UserManager("data/video_club.db")
-#     # Registra un nuevo usuario
-#     success = user_manager.register_user("nuevo_usuario", "contraseña", "email@example.com")
-#     if success:
-#         print("Usuario registrado exitosamente.")
-#     else:
-#         print("Error al registrar el usuario: usuario o correo ya existen.")
-    
-#     # Autenticación de un usuario
-#     if user_manager.authenticate_user("nuevo_usuario", "contraseña"):
-#         print("Usuario autenticado.")
-#     else:
-#         print("Autenticación fallida.")
-    
-#     user_manager.close_connection()

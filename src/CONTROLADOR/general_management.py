@@ -17,7 +17,7 @@ class GeneralManager:
         if not self.__initialized:
             self.__initialized = True
             
-    ###---------------- Métodos para la funcionalidad de GESTIÓN DE USUARIOS ----------------###
+    ###---------------- Métodos para la funcionalidad de GESTIÓN DE USUARIOS -- JORGE ILLERA RIVERA----------------###
     ###         -------USUARIOS-------         ###
     def register_user(self, username, password, email):
         user_manager = UserManager()
