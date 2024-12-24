@@ -18,9 +18,7 @@ class DbManager:
 
     def create_connection(self):
         """Crear una conexión a la base de datos SQLite."""
-        if not hasattr(self, "conn") or self.conn is None:
-            self.conn = sqlite3.connect(self.db_file, check_same_thread=False)
-            self.conn.execute("PRAGMA journal_mode=WAL;")  # Habilitar modo WAL
+        self.conn = sqlite3.connect(self.db_file)
         return self.conn
 
     def insert_user(self, username, password, email):
