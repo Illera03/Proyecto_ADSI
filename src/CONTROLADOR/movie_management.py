@@ -51,10 +51,18 @@ class MovieManager:
         """Obtener todas las películas que el usuario ha alquilado"""
         return 0
     
-    def add_movie_from_bd(self, id, title, genre, year, director, rating):
+    def add_movie_from_bd(self, id, title, genre, year, director, rating, idAdminAceptado):
         """Añadir una nueva película a la lista de películas."""
         for m in self.movieList:
             if m.id == id:
                 print("Ya hay una película con ese ID")
                 return False
         self.movieList.append(movie.Movie.new_movie(id, title, genre, year, director, rating))
+
+    def print_movies(self):
+        """Imprimir la lista de películas."""
+        print("\nLista de películas:\n")
+        print("---------------------------------------------------------------------------------------------------------------------------------")
+        for movie in self.movieList:
+            print(f"ID: {movie.id}, Título: {movie.title}, Género: {movie.genre}, Año: {movie.year}, Director: {movie.director}, Calificación: {movie.rating}")
+            print("---------------------------------------------------------------------------------------------------------------------------------")

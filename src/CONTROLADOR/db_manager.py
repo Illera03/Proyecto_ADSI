@@ -64,7 +64,7 @@ class DbManager:
             user_manager.add_user_from_bd(username, password, email, role, status, idAdmin)
         
         # Iterar por cada alquiler y agregarlo al AlquilerManager
-        alquiler_manager = AlquilerManager()
+        alquiler_manager = AlquilerManager(self.db_file)
         self.create_connection()
         cursor = self.conn.cursor()
         cursor.execute("SELECT * FROM Alquileres")

@@ -92,7 +92,22 @@ class GeneralManager:
             else:
                 print("Error al eliminar usuario de la base de datos.")
                 return False
-
+            
+    def rent_movie(self, user_id, movie_id, rent_date):
+                alquiler_manager = AlquilerManager()
+                if alquiler_manager.rent_movie(user_id, movie_id, rent_date):
+                    print("Película alquilada correctamente.")
+                    db_manager_instance = DbManager()
+                    if db_manager_instance.save_rental(user_id, movie_id):
+                        print("Alquiler guardado en la base de datos.")
+                        return True
+                    else:
+                        print("Error al guardar alquiler en la base de datos.")
+                        return False
+                else:
+                    print("Error al alquilar película.")
+                    return False
+    
     def admin_update_user_info(self, old_username, new_username, new_email, new_password = None):
         user_manager = UserManager()
         resul = False
