@@ -4,6 +4,7 @@ import MODELO.movie as movie
 import json
 
 class MovieManager:
+    movieList = []
     _instance = None  # Atributo de clase para almacenar la única instancia
 
     def __new__(cls, *args, **kwargs):
@@ -49,3 +50,11 @@ class MovieManager:
     def get_user_rentals(self, user_id):
         """Obtener todas las películas que el usuario ha alquilado"""
         return 0
+    
+    def add_movie_from_bd(self, id, title, genre, year, director, rating):
+        """Añadir una nueva película a la lista de películas."""
+        for m in self.movieList:
+            if m.id == id:
+                print("Ya hay una película con ese ID")
+                return False
+        self.movieList.append(movie.Movie.new_movie(id, title, genre, year, director, rating))

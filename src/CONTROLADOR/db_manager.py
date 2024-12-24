@@ -1,5 +1,7 @@
 import sqlite3
 from CONTROLADOR.user_management import UserManager
+from CONTROLADOR.alquiler_management import AlquilerManager
+from CONTROLADOR.movie_management import MovieManager
 
 class DbManager:
     _instance = None
@@ -60,6 +62,36 @@ class DbManager:
             status = usuario[5]    
             idAdmin = usuario[6]   
             user_manager.add_user_from_bd(username, password, email, role, status, idAdmin)
+        
+        # Iterar por cada alquiler y agregarlo al AlquilerManager
+        alquiler_manager = AlquilerManager()
+        self.create_connection()
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM Alquileres")
+        alquileres = cursor.fetchall()
+        for alquiler in alquileres:
+            user_id = alquiler[0]
+            movie_id = alquiler[1]
+            rental_date = alquiler[2]
+            alquiler_manager.add_alquiler_from_bd(user_id, movie_id, rental_date)
+        
+        # Iterar por cada película y agregarla al MovieManager
+        movie_manager = MovieManager()
+        self.create_connection()
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM Películas")
+        peliculas = cursor.fetchall()
+        for pelicula in peliculas:
+            movie_id = pelicula[0]
+            title = pelicula[1]
+            genre = pelicula[2]
+            release_year = pelicula[3]
+            director = pelicula[4]
+            notaPromedio = pelicula[5]
+            idAdminAceptado = pelicula[6]
+            movie_manager.add_movie_from_bd(movie_id, title, genre, release_year, director, notaPromedio, idAdminAceptado)
+
+
         
         # TODO Cargar datos de películas, alquileres, etc..."""
         user_manager.print_users()
