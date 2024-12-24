@@ -175,12 +175,12 @@ class UserManager:
         """Cambiar el usuario actual"""
         self.current_user = username
     
-    # def get_user(self, username):
-    #     """Obtener un usuario específico"""
-    #     for u in self.user_list:
-    #         if u.user_with_name(username):
-    #             return u.get_all_user_info()
-    #     return None        
+    def get_user(self, username):
+        """Obtener un usuario específico"""
+        for u in self.user_list:
+            if u.user_with_name(username):
+                return u.get_all_user_info()
+        return None        
             
     #! ---------------------------------------------------------------------------------------------------------------------------------------------------------        
     #! Esto está mal

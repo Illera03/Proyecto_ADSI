@@ -330,32 +330,75 @@ def test_admin_update_user_info(): #FUNCIONA
     assert result == False
     
     user_manager.empty_user_list()
+    db_manager.delete_user(username1)
+    db_manager.delete_user(new_username)
+    
     
     
 # Un administrador rechaza la solicitud de registro de un usuario --> Desaparece la solicitud y el usuario no queda registrado (no puede inciar sesión).
 
-# def test_reject_user(): #FUNCIONA
-#     # Arrange
-#     username = "test_user"
-#     password = "test_password"
-#     email = "test_email"
+def test_reject_user(): #FUNCIONA
+# Arrange
+    username = "test_user"
+    password = "test_password"
+    email = "test_email"
     
-#     general_manager = GeneralManager()
-#     # Por si el usuario ya está registrado previamente
-#     db_manager = DbManager()
-#     user_manager = UserManager()
-#     db_manager.delete_user(username)
-#     user_manager.empty_user_list()
+    general_manager = GeneralManager()
+    # Por si el usuario ya está registrado previamente
+    db_manager = DbManager()
+    user_manager = UserManager()
+    db_manager.delete_user(username)
+    user_manager.empty_user_list()
     
-#     general_manager.register_user(username, password, email)
-#     user_manager.change_current_user("_admin_")
+    general_manager.register_user(username, password, email)
+    user_manager.change_current_user("_admin_")
     
-#     # Act
-#     general_manager.reject_user(username)
-#     result = general_manager.authenticate_user(username, password)
+    # Act
+    general_manager.reject_user(username)
+    result = general_manager.authenticate_user(username, password)
     
-#     # Assert
-#     assert result == 4 # 4: Usuario rechazado
+    # Assert
+    assert result == 4 # 4: Usuario rechazado
+    
+    db_manager.delete_user(username)
+    user_manager.empty_user_list()
+    
+# Una persona se registra para crear un administrador, poniéndose de nombre de usuario _admin_ --> Se registra al nuevo con rol de administrador.
+
+def test_register_admin(): #FUNCIONA
+    # Arrange
+    username = "_admin_"
+    password = "test_password"
+    email = "test_email"
+    
+    general_manager = GeneralManager()
+    # Por si el usuario ya está registrado previamente
+    db_manager = DbManager()
+    user_manager = UserManager()
+    db_manager.delete_user(username)
+    user_manager.empty_user_list()
+    
+    # Act
+    result1 = general_manager.register_user(username, password, email)
+    result2 = general_manager.authenticate_user(username, password) # Deja iniciar sesión sin ser aceptado
+    
+    # Assert
+    assert result1 == True
+    assert result2 == 1 # 1: Usuario autenticado como administrador
+    
+    if result1:
+        # Comprobar que el admin se ha registrado en la base de datos
+        user = db_manager.exists_user(username)
+        assert user == True
+        
+        # Comprobar que el admin se ha registrado en el user_manager
+        exist = user_manager.exists_user(username)
+        assert exist == True
+        
+        info = user_manager.get_user(username)
+        assert info["role"] == "admin" # Comprobar que el rol es de administrador
+        assert info["status"] == "aceptado"
+    
     
 
     

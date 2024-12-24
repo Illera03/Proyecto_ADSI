@@ -17,9 +17,10 @@ class DbManager:
             self.conn = self.create_connection()
 
     def create_connection(self):
-        """ Crear una conexión a la base de datos SQLite """
-  
-        self.conn = sqlite3.connect(self.db_file)
+        """Crear una conexión a la base de datos SQLite."""
+        if not hasattr(self, "conn") or self.conn is None:
+            self.conn = sqlite3.connect(self.db_file, check_same_thread=False)
+            self.conn.execute("PRAGMA journal_mode=WAL;")  # Habilitar modo WAL
         return self.conn
 
     def insert_user(self, username, password, email):
@@ -66,17 +67,20 @@ class DbManager:
         user_manager.print_users()
     
     def delete_user(self, username):
-        """ Eliminar un usuario de la base de datos """
-        self.create_connection()
-        cursor = self.conn.cursor()
+        """Eliminar un usuario de la base de datos."""
+        conn = self.create_connection()
+        cursor = conn.cursor()
         try:
             cursor.execute("DELETE FROM Usuarios WHERE username = ?", (username,))
-            self.conn.commit()
+            conn.commit()
             print(f"Usuario {username} eliminado")
             return True
-        except sqlite3.IntegrityError as e:
+        except sqlite3.OperationalError as e:
             print(f"Error al eliminar usuario: {e}")
             return False
+        finally:
+            cursor.close() 
+
         
     def update_user(self, oldUsername, newUsername, email, password=None):
         """ Actualizar la información de un usuario en la base de datos """
@@ -91,6 +95,8 @@ class DbManager:
             return True
         except sqlite3.IntegrityError as e:
             print(f"Error al actualizar usuario: {e}")
+        finally:
+            cursor.close()
             
     def save_admin(self, admin_username, username):
         """ Guardar el id del admin que aceptó o rechazó al usuario con el username dado en el usuario correspondiente """
