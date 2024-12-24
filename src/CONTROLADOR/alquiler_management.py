@@ -1,38 +1,41 @@
 import tkinter as tk
 import sqlite3
-
+import json
+import requests
+from tkinter import messagebox
 import datetime
+from MODELO.alquiler import Alquiler
 
 class AlquilerManager:
-    
-    def __init__(self, dbPath):
-        self. alquileres = []
-        self.dbPath = dbPath
+    _instance = None  # Atributo de clase para la instancia única
 
-    def rent_movie(self, user_id, movie_id,date):
-        """Alquilar una película"""
-        from MODELO.alquiler import Alquiler
-        alq =  Alquiler.nuevo_alquiler(user_id, movie_id, rental_date =date)
-        self.alquileres.append(alq)
-        from CONTROLADOR.db_manager import DbManager
-        db_manager_instance = DbManager()
-        if db_manager_instance.insert_alquiler(user_id, movie_id, rental_date = date): 
-            print("Alquiler insertado en la base de datos.") 
-        else:
-            print("Error al insertar alquiler en la base de datos.")
-        return alq
-    
-    def view_rented_movies(self):
-        return self.alquileres
+    def __new__(cls, db_file=None):
+        """Método para garantizar que solo haya una instancia de AlquilerManager"""
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.alquileres = []  # Lista de alquileres
+        return cls._instance
+
+    def add_rent(self, user_id, movie, date):
+        """Añadir un nuevo alquiler a la lista de alquileres."""
+        new_rent = Alquiler.nuevo_alquiler(user_id, movie, date)  # Asumimos que 'nuevo_alquiler' es un método estático
+        self.alquileres.append(new_rent)  # Agregamos el alquiler a la lista
+        return True
+
+    def view_rented_movies(self, user_id):
+        """Devuelve la lista de alquileres de un usuario en concreto"""
+        user_rentals = [alquiler for alquiler in self.alquileres if alquiler.user_id == user_id]
+        return user_rentals
+
     def add_alquiler_from_bd(self, user_id, movie_id, date):
-        from MODELO.alquiler import Alquiler
         """Añadir un nuevo alquiler a la lista de alquileres desde la base de datos."""
         for a in self.alquileres:
             if a.user_id == user_id and a.movie_id == movie_id and a.date == date:
                 print("Ya hay un alquiler con esos datos")
                 return False
+        # Crear un nuevo alquiler e agregarlo a la lista
         new_alquiler = Alquiler(user_id=user_id, movie_id=movie_id, rental_date=date)
         self.alquileres.append(new_alquiler)
         return True
-    
+
     

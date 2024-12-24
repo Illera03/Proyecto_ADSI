@@ -93,9 +93,9 @@ class GeneralManager:
                 print("Error al eliminar usuario de la base de datos.")
                 return False
             
-    def rent_movie(self, user_id, movie_id, rent_date):
+    def rent_movie(self, user_id, movie_id):
                 alquiler_manager = AlquilerManager()
-                if alquiler_manager.rent_movie(user_id, movie_id, rent_date):
+                if alquiler_manager.add_rent(user_id, movie_id, datetime.date.today()):
                     print("Película alquilada correctamente.")
                     db_manager_instance = DbManager()
                     if db_manager_instance.save_rental(user_id, movie_id):
@@ -177,8 +177,5 @@ class GeneralManager:
                 print("Error al guardar al admin como rechazador del usuario en la base de datos.")
                 return False
     ###-------------------------------------------------------------------------------------###
-    def rent_movie(self, user_id, movie_id):
-            """Alquilar una película"""
-            return AlquilerManager.rent_movie(user_id, movie_id,fecha_alquiler=datetime.date.today())
     def view_rented_movies(self):
         return AlquilerManager.view_rented_movies()

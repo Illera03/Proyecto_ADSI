@@ -8,5 +8,7 @@ class Alquiler:
         return f"Alquiler(user_id={self.user_id}, movie_id={self.movie_id}, rental_date={self.rental_date})"
        
        
+    @staticmethod
     def nuevo_alquiler(user_id, movie_id, rental_date):
-            return cls(user_id, movie_id, rental_date)
+        # Crea y devuelve una nueva instancia de la clase Alquiler
+        return Alquiler(user_id, movie_id, rental_date)

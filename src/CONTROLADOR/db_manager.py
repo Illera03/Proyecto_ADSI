@@ -141,7 +141,18 @@ class DbManager:
         except sqlite3.IntegrityError as e:
             print(f"Error al guardar admin que aceptó usuario: {e}")
             return False
-        
+    def save_rental(self, user_id, movie_id):
+        """ Guardar un alquiler en la base de datos """
+        self.create_connection()
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute("INSERT INTO Alquileres (user_id, movie_id) VALUES (?, ?)", (user_id, movie_id))
+            self.conn.commit()
+            return True
+        except sqlite3.IntegrityError as e:
+            print(f"Error al guardar alquiler: {e}")
+            return False
+           
     def accept_user(self, username):
         """ Cambiar el estado de un usuario a 'aceptado' """
         self.create_connection()

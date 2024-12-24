@@ -10,7 +10,9 @@ class App:
     def __init__(self, master):
         self.master = master
         self.master.title("Video Club")
-        
+        # Inicializar AlquilerManager
+        self.alquiler_manager = AlquilerManager()
+
         #Inicializar MovieManager
         self.movie_manager = MovieManager()
 
@@ -152,8 +154,6 @@ class App:
  
     def user_rent_movies(self, page=1):
         """Función del usuario para alquilar las películas disponibles"""
-       #  messagebox.showinfo(text="Alquilar pelicula", command=self.user_rent_movies).pack(pady=10)
-       # self.container.focus_force()  # Asegura que la ventana tenga el foco
         self.clear_frame()
         tk.Label(self.container, text="Películas disponibles").pack(pady=10)
         # Número de películas a mostrar por página
@@ -179,7 +179,7 @@ class App:
                 movie_label.pack(pady=5)
 
              # Botón alquilar la película
-                rent_button = tk.Button(self.container, text="Alquilar", bg="grey", command=lambda m=movie: self.rent_movie(self.logged_in_user,m))
+                rent_button = tk.Button(self.container, text="Alquilar", bg="grey", command=lambda movie=movie: self.rent_movie(self.logged_in_user, movie.title))
                 rent_button.pack(pady=2)
 
         # Navegación entre páginas
@@ -202,55 +202,66 @@ class App:
 
     def rent_movie(self, user, movie):
             """Alquilar una película"""
-            if self.general_manager.rent_movie(user, movie, datetime.date.today()):
+            if self.general_manager.rent_movie(user, movie):
                 messagebox.showinfo("Éxito", f"Película '{movie}' alquilada correctamente.")
             else:
                 messagebox.showerror("Error", f"No se pudo alquilar la película '{movie}'.")
             self.user_rent_movies()
             self.container.focus_force()  # Asegura que la ventana tenga el foco
  
-    def user_view_rentals(self):
+    def user_view_rentals(self, page=1):
         """Función del usuario para ver sus alquileres"""
-        #messagebox.showinfo("Usuario", "Función para ver alquileres")
-        #self.container.focus_force()  # Asegura que la ventana tenga el foco
         self.clear_frame()
-        tk.Label(self.container, text="Mis Alquileres").pack(pady=10)
-
-        # Obtener los alquileres del usuario ordenador por valoracion
-        cursor = self.movie_manager.connection.cursor()
-        cursor.execute("""
-            SELECT P.movie_id, P.title, P.genre, P.release_year, P.director, P.notaPromedio
-            FROM Alquileres A JOIN Películas P ON A.movie_id = P.movie_id
-            WHERE A.user_id = ? ORDER BY notaPromedio DESC
-        """, (self.logged_in_user,))  # Suponiendo que self.logged_in_user contiene el ID del usuario
-        rentals = cursor.fetchall()
-
-        if not rentals:
-            # Si no hay alquileres, mostrar un mensaje
-            tk.Label(self.container, text="No tienes alquileres aun", font=("Arial", 14)).pack(pady=10)
-        else:
-            # Mostrar las películas alquiladas
-            for rental in rentals:
-                movie_info = f"ID: {rental[0]} - Título: {rental[1]} - Año: {rental[3]} - Género: {rental[2]} - Director: {rental[4]} - notaPromedio: {rental[5]}"
-                tk.Label(self.container, text=movie_info).pack()
-                # Verificar si el usuario ya tiene una reseña para esta película
-                review = self.review_manager.get_review_for_movie(self.logged_in_user, rental[0])  # Obtener la reseña actual
-                if review:
-                    # Si ya existe la reseña, mostrar botón para modificarla
-                    modify_button = tk.Button(self.container, text="Modificar Reseña", bg="blue", command=lambda m=rental[0]: self.modify_review(m))
-                    modify_button.pack(pady=5)
-                else:
-                    # Si no existe la reseña, mostrar botón para añadirla
-                    add_button = tk.Button(self.container, text="Añadir Reseña", bg="green", command=lambda m=rental[0]: self.add_review(m))
-                    add_button.pack(pady=5)
-
-                    # Botón para ver reseñas de otros usuarios
-                view_reviews_button = tk.Button(self.container, text="Ver Reseñas", bg="orange", command=lambda m=rental[0]: self.show_others_reviews(m))
-                view_reviews_button.pack(pady=5)
+        tk.Label(self.container, text="Películas disponibles").pack(pady=10)
+        # Número de películas a mostrar por página
+        items_per_page = 5
+        #Obtener todas las películas alquiladas
+        movies = self.alquiler_manager.view_rented_movies(self.logged_in_user) # Supongamos que esta función devuelve una lista de diccionarios con las películas
+        total_movies = len(movies)
         
-        self.container.focus_force()  # Asegura que la ventana tenga el foco
-        tk.Button(self.container, text="Volver", command=lambda: self.show_user_menu("user")).pack(pady=10)
+         # Calcular el rango de peliculas a mostrar en esta página
+        start_index = (page - 1) * items_per_page
+        end_index = start_index + items_per_page
+        movies_to_show = movies[start_index:end_index]  # Acceso a la lista de películas
 
+        # Etiqueta del título
+        tk.Label(self.container, text="Peliculas alquiladas", font=("Arial", 14)).pack(pady=10)
+
+        # Mostrar las peliculas de la página actual
+        if not movies_to_show:
+            tk.Label(self.container, text="No hay más películas disponibles", font=("Arial", 14)).pack(pady=5)
+        else:
+            for movie in movies_to_show:
+                movie_label = tk.Label(self.container, text=f"'{movie.movie_id}' , {movie.rental_date}", font=("Arial", 12))
+                movie_label.pack(pady=5)
+
+        # Navegación entre páginas
+        nav_frame = tk.Frame(self.container)
+        nav_frame.pack(pady=10)
+
+         # Botón "Anterior" (sólo mostrar si no estamos en la primera página)
+        if page > 1:
+            previous_button = tk.Button(nav_frame, text="Anterior", bg="grey", command=lambda: self.user_rent_movies(page-1))
+            previous_button.pack(side="left", padx=5)
+
+        # Botón "Siguiente" (sólo mostrar si hay más usuarios que mostrar)
+        if end_index < total_movies:
+            next_button = tk.Button(nav_frame, text="Siguiente", bg="grey", command=lambda: self.user_rent_movies(page+1))
+            next_button.pack(side="right", padx=5)
+            
+        # Botón para volver al menú principal (siempre visible)
+        tk.Button(self.container, text="Volver", command=lambda: self.show_user_menu("user")).pack(pady=10)
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
+
+    def rent_movie(self, user, movie):
+            """Alquilar una película"""
+            if self.general_manager.rent_movie(user, movie):
+                messagebox.showinfo("Éxito", f"Película '{movie}' alquilada correctamente.")
+            else:
+                messagebox.showerror("Error", f"No se pudo alquilar la película '{movie}'.")
+            self.user_rent_movies()
+            self.container.focus_force()  # Asegura que la ventana tenga el foco
+ 
     def add_review(self, movie_id):
         """Función para añadir una reseña"""
         # Solicitar al usuario que ingrese el texto de la reseña
