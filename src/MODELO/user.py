@@ -9,7 +9,6 @@ class User:
         else:
             self.__role = "user"
             self.__status = "pendiente"
-        self.__idAdmin = None
         self.__whoAccepted = []
 
     @staticmethod
@@ -18,12 +17,11 @@ class User:
         return User(username, password, email)
     
     @classmethod
-    def new_user_from_bd(cls, username, password, email, status, role, idAdmin):
+    def new_user_from_bd(cls, username, password, email, status, role):
         """Crea y devuelve una nueva instancia de la clase User con todos los valores personalizados."""
         instance = cls(username, password, email)
         instance.__status = status
         instance.__role = role
-        instance.__idAdmin = idAdmin
         return instance
 
     def user_with_name(self, username):
@@ -48,7 +46,6 @@ class User:
             "password": self.__password,
             "status": self.__status,
             "role": self.__role,
-            "idAdmin": self.__idAdmin
         }
 
     def update_user_info(self, new_username, new_email, new_password = None):

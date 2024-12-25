@@ -28,14 +28,14 @@ class UserManager:
         self.user_list.append(user.User.new_user(username, password, email))
         return True
     
-    def add_user_from_bd(self, username, password, email, role, status, idAdmin): 
+    def add_user_from_bd(self, username, password, email, role, status): 
         """Añadir un nuevo usuario a la lista de usuarios."""
         for u in self.user_list:
             repetido = u.user_with_name(username)
             if repetido:
                 print("Ya hay un usuario con ese nombre")
                 return False 
-        self.user_list.append(user.User.new_user_from_bd(username=username, password=password, email=email, status=status, role=role, idAdmin=idAdmin))
+        self.user_list.append(user.User.new_user_from_bd(username=username, password=password, email=email, status=status, role=role))
 
     def authenticate_user(self, username, password):
         """Autenticar un usuario en la base de datos."""

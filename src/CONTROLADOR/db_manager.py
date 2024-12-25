@@ -20,7 +20,10 @@ class DbManager:
 
     def create_connection(self):
         """Crear una conexión a la base de datos SQLite."""
-        self.conn = sqlite3.connect(self.db_file)
+        #self.conn = sqlite3.connect(self.db_file)
+        if not hasattr(self, "conn") or self.conn is None:
+            self.conn = sqlite3.connect(self.db_file, check_same_thread=False)
+            self.conn.execute("PRAGMA journal_mode=WAL;")  # Habilitar modo WAL
         return self.conn
 
     def insert_user(self, username, password, email):
@@ -49,8 +52,8 @@ class DbManager:
         """ Pasar datos de la base de datos a la aplicación """
         """Usuarios"""
         user_manager = UserManager()
-        self.create_connection()
-        cursor = self.conn.cursor()
+        conn = self.create_connection()
+        cursor = conn.cursor()
         cursor.execute("SELECT * FROM Usuarios")
         usuarios = cursor.fetchall()
         # Iterar por cada usuario y agregarlo al UserManager
@@ -60,8 +63,9 @@ class DbManager:
             email = usuario[3]     
             role = usuario[4]     
             status = usuario[5]    
-            idAdmin = usuario[6]   
-            user_manager.add_user_from_bd(username, password, email, role, status, idAdmin)
+            user_manager.add_user_from_bd(username, password, email, role, status)
+        
+        user_manager.print_users()
         
         # Iterar por cada alquiler y agregarlo al AlquilerManager
         alquiler_manager = AlquilerManager(self.db_file)
@@ -94,7 +98,7 @@ class DbManager:
 
         
         # TODO Cargar datos de películas, alquileres, etc..."""
-        user_manager.print_users()
+
     
     def delete_user(self, username):
         """Eliminar un usuario de la base de datos."""
@@ -111,6 +115,7 @@ class DbManager:
         finally:
             cursor.close() 
 
+    
         
     def update_user(self, oldUsername, newUsername, email, password=None):
         """ Actualizar la información de un usuario en la base de datos """
