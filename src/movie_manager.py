@@ -1,5 +1,5 @@
 import sqlite3
-from movie import Movie
+from MODELO.movie import Movie
 
 class MovieManager:
     dbPath="data/video_club.db"

@@ -59,6 +59,30 @@ class MovieManager:
                 return False
         self.movieList.append(movie.Movie.new_movie(id, title, genre, year, director, rating))
 
+    def add_movie_from_omdb(self, movie_data):
+        # Extraer datos del JSON
+        id_pelicula = movie_data["imdbID"]
+        titulo = movie_data["Title"]
+        genero = movie_data["Genre"]
+        año_estreno = movie_data["Year"]
+        director = movie_data["Director"]
+
+        # Crear un diccionario para la película
+        nueva_pelicula = {
+            "id": id_pelicula,
+            "title": titulo,
+            "genre": genero,
+            "release_year": año_estreno,
+            "director": director,
+            "nota_promedio": 0.0,  # Valor predeterminado
+            "id_admin_aceptado": None  # Valor predeterminado
+        }
+
+        # Añadir la película a la lista
+        self.peliculas.append(nueva_pelicula)
+        print(f"Película '{titulo}' añadida exitosamente.")
+        return True
+
     def print_movies(self):
         """Imprimir la lista de películas."""
         print("\nLista de películas:\n")

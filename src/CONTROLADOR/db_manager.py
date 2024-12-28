@@ -2,6 +2,7 @@ import sqlite3
 from CONTROLADOR.user_management import UserManager
 from CONTROLADOR.alquiler_management import AlquilerManager
 from CONTROLADOR.movie_management import MovieManager
+from CONTROLADOR.request_management import RequestManager
 
 class DbManager:
     _instance = None
@@ -94,7 +95,18 @@ class DbManager:
             notaPromedio = pelicula[5]
             idAdminAceptado = pelicula[6]
             movie_manager.add_movie_from_bd(movie_id, title, genre, release_year, director, notaPromedio, idAdminAceptado)
-
+        
+        # Iterar por cada peticion y agregarla al RequestManager
+        request_manager = RequestManager()
+        self.create_connection()
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM Peticiones")
+        peticiones = cursor.fetchall()
+        for peticion in peticiones:
+            movie_id = peticion[0]
+            user_id = peticion[1]
+            status = peticion[2]
+            request_manager.add_request_from_bd(movie_id, user_id, status=False)
 
         
         # TODO Cargar datos de películas, alquileres, etc..."""

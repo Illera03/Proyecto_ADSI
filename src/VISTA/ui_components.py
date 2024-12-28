@@ -5,6 +5,9 @@ from CONTROLADOR.movie_management import MovieManager
 from review_management import ReviewManager
 from CONTROLADOR.general_management import GeneralManager
 from CONTROLADOR.alquiler_management import AlquilerManager
+from CONTROLADOR.request_management import RequestManager
+from MODELO import movie
+
 import datetime
 class App:
     def __init__(self, master):
@@ -22,6 +25,9 @@ class App:
         # Inicializar UserManager
         self.user_manager = UserManager()
         
+        #Inicializar RequestManager
+        self.request_manager= RequestManager()
+
         # Inicializar GeneralManager
         self.general_manager = GeneralManager()
 
@@ -455,12 +461,14 @@ class App:
             return
 
         # Llamar a la función para buscar la película en OMDb
-        movie_data = self.user_manager.search_movie_omdb(movie_title)
+        movie_data = RequestManager.search_movie_omdb(movie_title)
 
         if movie_data:
             # Si se encuentra la película, se inserta en la base de datos
-            self.user_manager.create_movie_request(self.logged_in_user, movie_data['Title'])
-
+            #m = movie.Movie.new_movie(id=movie_data['imdbID'],title=movie_data['Title'],genre=movie_data['Genre'],release_year=movie_data['Year'],director=movie_data['Director'],nota_promedio=0.0,id_admin_aceptado=None)
+            self.movie_manager.add_movie_from_omdb(movie_data)
+            user_id = self.user_manager.get_user_id()
+            self.request_manager.add_request_from_omdb(self, movie_data['omdbID'], user_id)
             # Mostrar mensaje de éxito
             messagebox.showinfo("Éxito", f"Película '{movie_data['Title']}' solicitada correctamente.")
             self.container.focus_force()  # Asegura que la ventana tenga el foco

@@ -206,20 +206,6 @@ class UserManager:
 
         self.connection.commit()
     
-    def search_movie_omdb(self, movie_title):
-        """Buscar la película en la API de OMDb"""
-        url = f"http://www.omdbapi.com/?t={movie_title}&apikey=2d79f0e"
-        response = requests.get(url)
-        
-        if response.status_code == 200:
-            data = response.json()
-            if data['Response'] == 'True':
-                return data  # Devolvemos los datos de la película
-            else:
-                return None  # No se encontró la película
-        else:
-            messagebox.showerror("Error", "No se pudo conectar con OMDb API.")
-            return None
     ###! ----------------------------------------------------------------------------
         
     # ! Esto también está mal
