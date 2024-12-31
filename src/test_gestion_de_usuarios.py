@@ -368,7 +368,7 @@ def test_reject_user(): #FUNCIONA
 def test_register_admin(): #FUNCIONA
     # Arrange
     username = "_admin_"
-    password = "test_password"
+    password = "test"
     email = "test_email"
     
     general_manager = GeneralManager()

@@ -1,6 +1,6 @@
 import sqlite3
 from tkinter import messagebox
-from CONTROLADOR.db_manager import create_connection
+#from CONTROLADOR.db_manager import create_connection
 from MODELO.request import Request
 
 class RequestManager:
