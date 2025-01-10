@@ -10,7 +10,6 @@ def initialize_database():
     if conn is not None:
         db_manager.create_tables()  # Llama al método para crear las tablas
         db_manager.cargar_datos_iniciales()  # Cargar datos iniciales en la base de datos
-        conn.close()  # Cierra la conexión después de todas las operaciones
     else:
         print("Error: No se pudo conectar a la base de datos.")
 

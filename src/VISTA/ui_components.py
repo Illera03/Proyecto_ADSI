@@ -109,7 +109,7 @@ class App:
             messagebox.showwarning("Pendiente", "Tu solicitud de registro está pendiente de aceptación por un administrador.")
             self.container.focus_force()  # Asegura que la ventana tenga el foco
         elif resul == 2:
-            messagebox.showerror("Error", "Credenciales incorrectas")
+            messagebox.showerror("Error", "Credenciales incorrectas o cuenta inexistente.")
             self.container.focus_force()  # Asegura que la ventana tenga el foco
         else:
             messagebox.showinfo("Éxito", f"Inicio de sesión exitoso. Rol: " + ("admin" if resul == 1 else "user"))
