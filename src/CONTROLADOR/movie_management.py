@@ -55,7 +55,7 @@ class MovieManager:
         """Añadir una nueva película a la lista de películas."""
         for m in self.movieList:
             if m.id == id:
-                print("Ya hay una película con ese ID")
+                # print("Ya hay una película con ese ID") #! COMENTADO POR QUE APARECÍAN MUCHOS EN LA CONSOLA
                 return False
         self.movieList.append(movie.Movie.new_movie(id, title, genre, year, director, rating))
 
