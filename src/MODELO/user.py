@@ -1,3 +1,5 @@
+import json
+
 class User:
     def __init__(self, username, password, email):
         self.__username = username
@@ -34,19 +36,19 @@ class User:
         return self.__status == "aceptado"
     
     def get_user_info(self):
-        return {
+        return json.dumps({
             "username": self.__username,
             "email": self.__email
-            }
+            })
 
     def get_all_user_info(self):
-        return {
+        return json.dumps({
             "username": self.__username,
             "email": self.__email,
             "password": self.__password,
             "status": self.__status,
             "role": self.__role,
-        }
+        })
 
     def update_user_info(self, new_username, new_email, new_password = None):
         self.__username = new_username

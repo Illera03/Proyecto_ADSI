@@ -7,6 +7,7 @@ from CONTROLADOR.general_management import GeneralManager
 from CONTROLADOR.alquiler_management import AlquilerManager
 from CONTROLADOR.request_management import RequestManager
 from MODELO import movie
+import json
 
 import datetime
 class App:
@@ -397,7 +398,8 @@ class App:
         self.container.focus_force()  # Asegura que la ventana tenga el foco
 
         # Obtener la información actual del usuario desde la base de datos
-        user_info = self.general_manager.get_user_info()
+        user_info_json = self.general_manager.get_user_info()
+        user_info = json.loads(user_info_json)
 
         # Mostrar campos con los datos actuales
         tk.Label(self.container, text="Actualizar información personal").pack(pady=10)
@@ -501,7 +503,8 @@ class App:
         items_per_page = 5
 
         # Obtener lista de usuarios pendientes
-        pending_users = self.general_manager.get_pending_users()
+        pending_users_json = self.general_manager.get_pending_users()
+        pending_users = json.loads(pending_users_json)
         total_users = len(pending_users)
 
         # Calcular el rango de usuarios a mostrar en esta página
@@ -630,7 +633,8 @@ class App:
         self.clear_frame()
 
         # Obtener la información actual del usuario desde la base de datos
-        user_info = self.general_manager.admin_get_user_info(username)
+        user_info_json = self.general_manager.admin_get_user_info(username)
+        user_info = json.loads(user_info_json)
 
         # Mostrar campos con los datos actuales
         tk.Label(self.container, text=f"Modificar datos de {username}").pack(pady=10)

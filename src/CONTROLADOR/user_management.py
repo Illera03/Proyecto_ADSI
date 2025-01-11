@@ -129,8 +129,9 @@ class UserManager:
         return True
 
     def get_pending_users(self):
-        """Obtener lista de usuarios pendientes de aprobación"""
-        return [u.get_username() for u in self.user_list if u.pending_user()]
+        """Obtener lista de usuarios pendientes de aprobación como JSON"""
+        pending_users = [u.get_username() for u in self.user_list if u.pending_user()]
+        return json.dumps(pending_users)
     
     def accept_user(self, username):
         """Aceptar un usuario pendiente de aprobación"""
@@ -156,7 +157,9 @@ class UserManager:
         print("\nDatos cargados de la base de datos:\n")
         print("---------------------------------------------------------------------------------------------------------------------------------")
         for user in self.user_list:
-            print(user.get_all_user_info())
+            user_info_json = user.get_all_user_info()
+            user_info = json.loads(user_info_json)
+            print(user_info)
             print("---------------------------------------------------------------------------------------------------------------------------------")
     
     #Métodos para pruebas

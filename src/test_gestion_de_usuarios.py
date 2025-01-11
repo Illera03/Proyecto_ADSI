@@ -7,6 +7,8 @@ from CONTROLADOR.general_management import GeneralManager
 from CONTROLADOR.db_manager import DbManager
 from CONTROLADOR.user_management import UserManager
 
+import json
+
 
 # Usuario no registrado se registra --> Se registra el usuario correctamente
 
@@ -395,7 +397,8 @@ def test_register_admin(): #FUNCIONA
         exist = user_manager.exists_user(username)
         assert exist == True
         
-        info = user_manager.get_user(username)
+        info_json = user_manager.get_user(username)
+        info = json.loads(info_json)
         assert info["role"] == "admin" # Comprobar que el rol es de administrador
         assert info["status"] == "aceptado"
     
