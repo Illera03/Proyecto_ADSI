@@ -62,7 +62,8 @@ class UserManager:
 
     def get_all_users(self):
         """Obtener lista de nombres de usuario"""
-        return [u.get_username() for u in self.user_list]
+        users = [u.get_username() for u in self.user_list]
+        return json.dumps(users)
 
     def delete_user(self, username):
         """Eliminar un usuario de la lista"""

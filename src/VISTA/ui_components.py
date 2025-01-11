@@ -558,7 +558,8 @@ class App:
         items_per_page = 5
 
         # Obtener todas las cuentas de usuario (lista de nombres de usuario)
-        all_users = self.general_manager.get_all_users()
+        all_users_json = self.general_manager.get_all_users()
+        all_users = json.loads(all_users_json)
         total_users = len(all_users)
 
         # Calcular el rango de usuarios a mostrar en esta página
