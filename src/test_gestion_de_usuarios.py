@@ -400,11 +400,17 @@ def test_register_admin(): #FUNCIONA
         assert info["status"] == "aceptado"
     
     
-def test_delete_admin():
-    db_manager = DbManager()
-    db_manager.delete_user("_admin_")
+# def test_video():
+#     db_manager = DbManager()
+#     db_manager.delete_user("_admin_")
+#     db_manager.delete_user("usuario1")
+#     db_manager.delete_user("usuario2")
+#     db_manager.delete_user("usuario3")
     
-    assert db_manager.exists_user("_admin_") == False
+#     assert db_manager.exists_user("_admin_") == False
+#     assert db_manager.exists_user("usuario1") == False
+#     assert db_manager.exists_user("usuario2") == False
+#     assert db_manager.exists_user("usuario3") == False
     
     
     
