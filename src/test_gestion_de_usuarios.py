@@ -2,6 +2,7 @@
 ### IMPORTANTE ###
 # NECESARIO INSTALAR pytest: pip install pytest
 # Para ejecutar las pruebas: pytest src/test_gestion_de_usuarios.py
+# Por tanto debe estar en la carpeta src para que funcione correctamente.
 
 from CONTROLADOR.general_management import GeneralManager
 from CONTROLADOR.db_manager import DbManager

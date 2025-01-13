@@ -186,35 +186,30 @@ class UserManager:
                 return u.get_all_user_info()
         return None        
             
-    #! ---------------------------------------------------------------------------------------------------------------------------------------------------------        
-    #! Esto está mal
-    def get_user_id(self, username):
-        """Obtiene el user_id a partir del nombre de usuario."""
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT user_id FROM Usuarios WHERE username = ?", (username,))
-        result = cursor.fetchone()
-        return result[0] if result else None
+    # #! ---------------------------------------------------------------------------------------------------------------------------------------------------------        
+    # #! Esto está mal
+    # def get_user_id(self, username):
+    #     """Obtiene el user_id a partir del nombre de usuario."""
+    #     cursor = self.connection.cursor()
+    #     cursor.execute("SELECT user_id FROM Usuarios WHERE username = ?", (username,))
+    #     result = cursor.fetchone()
+    #     return result[0] if result else None
     
     
-    ###! ???? ESTO NO VA AQUÍ, VA EN OTRA CLASE--------------------------------------
-    def create_movie_request(self, username, movie_title):
-        """Crea una solicitud de película en la base de datos."""
-        cursor = self.connection.cursor()
+    # ###! ???? ESTO NO VA AQUÍ, VA EN OTRA CLASE--------------------------------------
+    # def create_movie_request(self, username, movie_title):
+    #     """Crea una solicitud de película en la base de datos."""
+    #     cursor = self.connection.cursor()
 
-        user_id = self.get_user_id(username)
+    #     user_id = self.get_user_id(username)
 
-        cursor.execute("""
-            INSERT INTO Peticiones (user_id, movie_title)
-            VALUES (?, ?)
-        """, (user_id, movie_title))
+    #     cursor.execute("""
+    #         INSERT INTO Peticiones (user_id, movie_title)
+    #         VALUES (?, ?)
+    #     """, (user_id, movie_title))
 
-        self.connection.commit()
+    #     self.connection.commit()
     
-    ###! ----------------------------------------------------------------------------
-        
-    # ! Esto también está mal
-    def close_connection(self):
-        """Cerrar la conexión a la base de datos."""
-        if self.connection:
-            self.connection.close()
+    # ###! ----------------------------------------------------------------------------
+
     
