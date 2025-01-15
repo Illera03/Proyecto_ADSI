@@ -1,9 +1,7 @@
 import tkinter as tk
 import sqlite3
-import json
-import requests
 from tkinter import messagebox
-import datetime
+from datetime import datetime, timedelta, date
 from MODELO.alquiler import Alquiler
 
 class AlquilerManager:
@@ -37,5 +35,29 @@ class AlquilerManager:
         new_alquiler = Alquiler(user_id=user_id, movie_id=movie_id, rental_date=date)
         self.alquileres.append(new_alquiler)
         return True
+
+    def view_movie(self, user_id, tituloPeli):
+        # Obtener la fecha y hora actual sin microsegundos
+        now = datetime.now().replace(microsecond=0)
+        for a in self.alquileres:
+            if a.esUserYMovie(user_id, tituloPeli):
+                # Verificar si a.rental_date es una cadena y convertirla a datetime
+                if isinstance(a.rental_date, str):
+                    # Ajusta el formato según cómo esté representada la fecha en el string
+                    a.rental_date = datetime.strptime(a.rental_date, "%Y-%m-%d %H:%M:%S")
+                
+                # Si es un date, conviértelo a datetime
+                elif isinstance(a.rental_date, date) and not isinstance(a.rental_date, datetime):
+                    a.rental_date = datetime.combine(a.rental_date, datetime.min.time())
+                
+                diferencia = now - a.rental_date
+                print(f"Diferencia: {diferencia}, Tiempo límite: {timedelta(hours=48)}")
+                
+                # Comprobar si han pasado más de 48 horas desde la fecha de alquiler
+                if diferencia > timedelta(hours=48):
+                    return False
+        return True
+
+
 
     

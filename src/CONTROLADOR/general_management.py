@@ -180,3 +180,7 @@ class GeneralManager:
                 else:
                     print("Error al alquilar película.")
                     return False
+
+    def view_movie(self, user_id, tituloPeli):
+        alquiler_manager = AlquilerManager()
+        return alquiler_manager.view_movie(user_id, tituloPeli)
