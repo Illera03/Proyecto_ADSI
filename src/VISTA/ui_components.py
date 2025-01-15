@@ -114,7 +114,7 @@ class App:
             self.container.focus_force()  # Asegura que la ventana tenga el foco
         else:
             messagebox.showinfo("Éxito", f"Inicio de sesión exitoso. Rol: " + ("admin" if resul == 1 else "user"))
-
+            self.logged_in_user = username
             if resul == 1:
                 self.show_user_menu("admin")  # Enseñar el menú de administrador
             else:
@@ -241,18 +241,22 @@ class App:
                 movie_label = tk.Label(self.container, text=f"'{movie.movie_id}' , {movie.rental_date}", font=("Arial", 12))
                 movie_label.pack(pady=5)
 
+            # Botón ver la película
+                rent_button = tk.Button(self.container, text="Ver", bg="grey", command=lambda movie=movie: self.view_movie(self.logged_in_user, movie.movie_id))
+                rent_button.pack(pady=2)
+
         # Navegación entre páginas
         nav_frame = tk.Frame(self.container)
         nav_frame.pack(pady=10)
 
          # Botón "Anterior" (sólo mostrar si no estamos en la primera página)
         if page > 1:
-            previous_button = tk.Button(nav_frame, text="Anterior", bg="grey", command=lambda: self.user_rent_movies(page-1))
+            previous_button = tk.Button(nav_frame, text="Anterior", bg="grey", command=lambda: self.user_view_rentals(page-1))
             previous_button.pack(side="left", padx=5)
 
         # Botón "Siguiente" (sólo mostrar si hay más usuarios que mostrar)
         if end_index < total_movies:
-            next_button = tk.Button(nav_frame, text="Siguiente", bg="grey", command=lambda: self.user_rent_movies(page+1))
+            next_button = tk.Button(nav_frame, text="Siguiente", bg="grey", command=lambda: self.user_view_rentals(page+1))
             next_button.pack(side="right", padx=5)
             
         # Botón para volver al menú principal (siempre visible)
@@ -267,6 +271,18 @@ class App:
                 messagebox.showerror("Error", f"No se pudo alquilar la película '{movie}'.")
             self.user_rent_movies()
             self.container.focus_force()  # Asegura que la ventana tenga el foco
+    
+    def view_movie(self, user, tituloPeli):
+        "Ver una pelicula"
+        if self.general_manager.view_movie(user, tituloPeli) == True:
+            messagebox.showinfo("Éxito", f"Reproduciendo película: '{tituloPeli}'.")
+        else:
+            messagebox.showerror("Error", f"Se ha caducado la reserva de:'{tituloPeli}'.")
+
+        self.user_view_rentals()
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
+
+    
  
     def add_review(self, movie_id):
         """Función para añadir una reseña"""

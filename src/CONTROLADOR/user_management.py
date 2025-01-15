@@ -2,7 +2,7 @@
 #import sqlite3
 #from CONTROLADOR.db_manager import create_connection  # Asumiendo que existe en otro lugar
 import json
-import requests
+
 import tkinter as tk
 from tkinter import messagebox
 import MODELO.user as user
