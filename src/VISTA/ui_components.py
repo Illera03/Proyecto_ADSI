@@ -124,7 +124,6 @@ class App:
         self.container.focus_force()  # Asegura que la ventana tenga el foco
 
     def show_user_menu(self, role):
-        #TODO CAMBIAR
         """Muestra el menú de opciones según el rol"""
         self.clear_frame()
         self.container.focus_force()  # Asegura que la ventana tenga el foco
