@@ -16,3 +16,5 @@ class Alquiler:
     
     def esUserYMovie(self, user_id, movie):
         return (user_id == self.user_id) and (movie == self.movie_id)
+    
+  

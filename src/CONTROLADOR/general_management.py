@@ -167,7 +167,8 @@ class GeneralManager:
         return AlquilerManager.view_rented_movies()
     
     def rent_movie(self, user_id, movie_id):
-                alquiler_manager = AlquilerManager()
+            alquiler_manager = AlquilerManager()
+            if alquiler_manager.existeAlquiler(user_id, movie_id) == False:
                 if alquiler_manager.add_rent(user_id, movie_id, datetime.date.today()):
                     print("Película alquilada correctamente.")
                     db_manager_instance = DbManager()
@@ -180,7 +181,10 @@ class GeneralManager:
                 else:
                     print("Error al alquilar película.")
                     return False
-
+            else:
+                print("Ya se habia alquilado antes")
+                return False
+            
     def view_movie(self, user_id, tituloPeli):
         alquiler_manager = AlquilerManager()
         return alquiler_manager.view_movie(user_id, tituloPeli)

@@ -28,7 +28,7 @@ class AlquilerManager:
     def add_alquiler_from_bd(self, user_id, movie_id, date):
         """Añadir un nuevo alquiler a la lista de alquileres desde la base de datos."""
         for a in self.alquileres:
-            if a.user_id == user_id and a.movie_id == movie_id and a.date == date:
+            if a.user_id == user_id and a.movie_id == movie_id and a.rental_date == date:
                 print("Ya hay un alquiler con esos datos")
                 return False
         # Crear un nuevo alquiler e agregarlo a la lista
@@ -41,6 +41,7 @@ class AlquilerManager:
         now = datetime.now().replace(microsecond=0)
         for a in self.alquileres:
             if a.esUserYMovie(user_id, tituloPeli):
+
                 # Verificar si a.rental_date es una cadena y convertirla a datetime
                 if isinstance(a.rental_date, str):
                     # Ajusta el formato según cómo esté representada la fecha en el string
@@ -57,7 +58,12 @@ class AlquilerManager:
                 if diferencia > timedelta(hours=48):
                     return False
         return True
+    
+    def existeAlquiler(self, user_id, movie_id):
+        for a in self.alquileres:
+            if a.esUserYMovie(user_id, movie_id):
+                return True
+        return False
 
-
-
+                
     

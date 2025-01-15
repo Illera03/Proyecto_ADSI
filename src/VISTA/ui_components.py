@@ -114,7 +114,7 @@ class App:
             self.container.focus_force()  # Asegura que la ventana tenga el foco
         else:
             messagebox.showinfo("Éxito", f"Inicio de sesión exitoso. Rol: " + ("admin" if resul == 1 else "user"))
-
+            self.logged_in_user = username
             if resul == 1:
                 self.show_user_menu("admin")  # Enseñar el menú de administrador
             else:
