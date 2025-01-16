@@ -239,7 +239,7 @@ class App:
             tk.Label(self.container, text="No hay más películas disponibles", font=("Arial", 14)).pack(pady=5)
         else:
             for movie in movies_to_show:
-                movie_label = tk.Label(self.container, text=f"'{movie.movie_id}' , {movie.rental_date}", font=("Arial", 12))
+                movie_label = tk.Label(self.container, text=f"'{movie.movie_id}'", font=("Arial", 12))
                 movie_label.pack(pady=5)
 
             # Botón ver la película
