@@ -293,3 +293,25 @@ class DbManager:
         cursor.execute("SELECT * FROM Usuarios WHERE username = ?", (username,))
         result = cursor.fetchone()
         return result
+    
+    def exists_rental(self, user_id, movie_id):
+        """Verificar si un alquiler existe en la base de datos para un usuario y una película."""
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM Alquileres WHERE user_id = ? AND movie_id = ?", (user_id, movie_id))
+        result = cursor.fetchone()
+        return result is not None
+    
+    def delete_rental(self, username, movie):
+        """Eliminar un alquiler de la base de datos."""
+        conn = self.create_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("DELETE ROM Alquileres WHERE user_id = ? AND movie_id = ?", (username, movie))
+            conn.commit()
+            print(f"Alquiler de {username}'de la pelicula' {movie} eliminado")
+            return True
+        except sqlite3.OperationalError as e:
+            print(f"Error al eliminar el alquiler del usuario usuario: {e}")
+            return False
+        finally:
+            cursor.close() 

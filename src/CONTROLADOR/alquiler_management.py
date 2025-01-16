@@ -64,6 +64,13 @@ class AlquilerManager:
             if a.esUserYMovie(user_id, movie_id):
                 return True
         return False
+    
+    def borrarAlquiler(self, user_id, movie_id):
+        for a in self.alquileres:
+            if a.esUserYMovie(user_id, movie_id):
+                self.alquileres.remove(a)
+                return True  # Indica que se borró con éxito
+        return False  # Indica que no se encontró el alquiler
 
                 
     

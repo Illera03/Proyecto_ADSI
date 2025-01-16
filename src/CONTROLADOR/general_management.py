@@ -162,7 +162,9 @@ class GeneralManager:
             else:
                 print("Error al guardar al admin como rechazador del usuario en la base de datos.")
                 return False
-    ###-------------------------------------------------------------------------------------###
+               
+    ###---------------- Métodos para la funcionalidad de ALQUILER DE PELICULAS -- IKER ARGULO GALAN----------------###
+    
     def view_rented_movies(self):
         return AlquilerManager.view_rented_movies()
     
