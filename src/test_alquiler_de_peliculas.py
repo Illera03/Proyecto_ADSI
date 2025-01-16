@@ -8,7 +8,8 @@
 from CONTROLADOR.general_management import GeneralManager
 from CONTROLADOR.db_manager import DbManager
 from CONTROLADOR.alquiler_management import AlquilerManager
-
+from MODELO.alquiler import Alquiler
+from datetime import datetime, timedelta, date
 
 
 # Usuario alquila una pelicula concreta que no tenía alquilada
@@ -116,3 +117,28 @@ def test_view_same_movie_twice():  # FUNCIONA
     # Cleanup: borrar el alquiler
     DbManager.delete_rental(username, movie)
     AlquilerManager.borrarAlquiler(username, movie)
+
+# Usuario ve una pelicula que ya tenía alquilada y ha caducado.
+
+def test_view_expired_movie():
+    # Arrange
+    username = "test_user"
+    movie = "test_movie1"
+    rental_date = datetime(2024, 12, 12, 12, 0, 0)  # Fecha fija para el alquiler
+
+    # Crear instancia de GeneralManager y añadir un alquiler
+    general_manager = GeneralManager()
+    nuevo_alquiler = Alquiler.nuevo_alquiler(username, movie, rental_date)
+    general_manager.alquiler_manager.alquileres.append(nuevo_alquiler)
+
+    # Act
+    result = general_manager.view_movie(username, movie)
+
+    # Assert
+    assert result == False  # Debería devolver False ya que el alquiler está caducado
+
+    # Cleanup: borrar el alquiler
+    DbManager.delete_rental(username, movie)
+    AlquilerManager.borrarAlquiler(username, movie)
+
+
