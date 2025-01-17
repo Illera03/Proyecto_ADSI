@@ -2,6 +2,8 @@
 from CONTROLADOR.user_management import UserManager
 from CONTROLADOR.db_manager import DbManager
 from CONTROLADOR.alquiler_management import AlquilerManager
+from CONTROLADOR.review_management import ReviewManager
+from CONTROLADOR.movie_management import MovieManager
 import datetime
 
 class GeneralManager:
@@ -93,7 +95,6 @@ class GeneralManager:
                 print("Error al eliminar usuario de la base de datos.")
                 return False
             
-    
     def admin_update_user_info(self, old_username, new_username, new_email, new_password = None):
         user_manager = UserManager()
         resul = False
@@ -129,7 +130,6 @@ class GeneralManager:
         if admin_username != -1:
             print("Usuario aceptado correctamente.")
             db_manager_instance = DbManager()
-            
             if db_manager_instance.save_admin(admin_username, username):
                 print("Admin guardado como aceptador del usuario en la base de datos.")
                 
@@ -143,7 +143,6 @@ class GeneralManager:
                 print("Error al guardar al admin como aceptador del usuario en la base de datos.")
                 return False
             
-            
     def reject_user(self, username):
         user_manager = UserManager()
         admin_username = user_manager.reject_user(username)
@@ -152,7 +151,6 @@ class GeneralManager:
             db_manager_instance = DbManager()
             if db_manager_instance.save_admin(admin_username, username):
                 print("Admin guardado como rechazador del usuario en la base de datos.")
-                
                 if db_manager_instance.reject_user(username):
                     print("Usuario rechazado en la base de datos.")
                     return True
@@ -190,3 +188,49 @@ class GeneralManager:
     def view_movie(self, user_id, tituloPeli):
         alquiler_manager = AlquilerManager()
         return alquiler_manager.view_movie(user_id, tituloPeli)
+    
+    ###-----------------Métodos para la funcionalidad de RESEÑAS DE PELICULAS -- EIDER VALENZUELA SAEZ----------------###
+
+    def get_review_for_movie(self, user_id, movie_id):
+        """Obtener una reseña específica de un usuario para una película"""
+        review_manager = ReviewManager()
+        return review_manager.get_review(user_id, movie_id)
+    
+    def register_Review(self, user_id, movie_id, rating, comment):
+        review_manager = ReviewManager()
+        bien = review_manager.add_review(user_id, movie_id, rating, comment)
+        if bien:
+            print("Reseña añadida correctamente.")
+            # Usar la misma instancia de DbManager
+            db_manager_instance = DbManager()
+            if db_manager_instance.register_Review(user_id, movie_id, rating, comment):
+                print("Reseña insertada en la base de datos.")
+                review_manager.update_movie_average(movie_id)  # Actualiza el promedio de la película
+                return True
+            else:
+                print("Error al insertar reseña en la base de datos.")
+                return False
+        else:
+            print("Error al agregar reseña.")
+            return False
+    
+    def modify_Review(self, user_id, movie_id, rating, comment):
+        review_manager = ReviewManager()
+        bien = review_manager.update_review_info(user_id, movie_id, rating, comment)
+        if bien:
+            print("Reseña modificada correctamente.")
+            # Usar la misma instancia de DbManager
+            db_manager_instance = DbManager()
+            if db_manager_instance.modify_Review(user_id, movie_id, rating, comment):
+                print("Reseña actualizada en la base de datos.")
+                review_manager.update_movie_average(movie_id)  # Actualiza el promedio de la película
+                return True
+            else:
+                print("Error al actualizar reseña en la base de datos.")
+                return False
+        else:
+            print("Error al actualizar reseña.")
+            return False
+    
+  
+    ###-------------------------------------------------------------------------------------###

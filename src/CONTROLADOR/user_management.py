@@ -39,7 +39,6 @@ class UserManager:
 
     def authenticate_user(self, username, password):
         """Autenticar un usuario en la base de datos."""
-        
         # Código de respuestas:
         # 0: Usuario autenticado
         # 1: Usuario autenticado como administrador
@@ -58,7 +57,6 @@ class UserManager:
                 else:
                     return 4 # Usuario rechazado
         return 2 # Usuario no encontrado o credenciales incorrectas
-            
 
     def get_all_users(self):
         """Obtener lista de nombres de usuario"""
@@ -91,18 +89,15 @@ class UserManager:
     
     def update_user_info(self, new_username, new_email, new_password=None):
         """Actualizar la información del usuario actual"""
-
         # Verificar si el nuevo nombre de usuario ya está en uso
         if new_username != self.current_user:
             for u in self.user_list:
                 if u.user_with_name(new_username):
                     return "error"  # Nombre de usuario ya en uso
-
         # Buscar al usuario actual
         user = next((u for u in self.user_list if u.user_with_name(self.current_user)), None)
         if not user:
             return "error"  # Usuario actual no encontrado
-
         # Actualizar la información del usuario
         user.update_user_info(new_username, new_email, new_password)
         old_username = self.current_user
@@ -112,18 +107,15 @@ class UserManager:
     
     def admin_update_user_info(self, old_username, new_username, new_email, new_password=None):
         """Actualizar la información del usuario actual"""
-
         # Verificar si el nuevo nombre de usuario ya está en uso
         if new_username != old_username:
             for u in self.user_list:
                 if u.user_with_name(new_username):
                     return "error"  # Nombre de usuario ya en uso
-
         # Buscar al usuario actual
         user = next((u for u in self.user_list if u.user_with_name(old_username)), None)
         if not user:
             return "error"  # Usuario actual no encontrado
-
         # Actualizar la información del usuario
         user.update_user_info(new_username, new_email, new_password)
         print(new_username)

@@ -3,6 +3,7 @@ from CONTROLADOR.user_management import UserManager
 from CONTROLADOR.alquiler_management import AlquilerManager
 from CONTROLADOR.movie_management import MovieManager
 from CONTROLADOR.request_management import RequestManager
+from CONTROLADOR.review_management import ReviewManager
 
 class DbManager:
     _instance = None
@@ -28,7 +29,6 @@ class DbManager:
         return self.conn
 
     def insert_user(self, username, password, email):
-        
         self.create_connection()
         cursor = self.conn.cursor()
         role = "admin" if username.lower() == "_admin_" else "user"
@@ -108,10 +108,19 @@ class DbManager:
             status = peticion[2]
             request_manager.add_request_from_bd(movie_id, user_id, status=False)
 
-        
-        # TODO Cargar datos de películas, alquileres, etc..."""
+        # Iterar por cada reseña y agregarla al ReviewManager
+        review_manager = ReviewManager()
+        self.create_connection()
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM Reseñas")
+        reseñas = cursor.fetchall()
+        for reseña in reseñas:
+            user_id = reseña[0]
+            movie_id = reseña[1]
+            rating = reseña[2]
+            comment = reseña[3]
+            review_manager.add_review_from_bd(user_id, movie_id, rating, comment)
 
-    
     def delete_user(self, username):
         """Eliminar un usuario de la base de datos."""
         conn = self.create_connection()
@@ -126,8 +135,6 @@ class DbManager:
             return False
         finally:
             cursor.close() 
-
-    
         
     def update_user(self, oldUsername, newUsername, email, password=None):
         """ Actualizar la información de un usuario en la base de datos """
@@ -158,6 +165,7 @@ class DbManager:
         except sqlite3.IntegrityError as e:
             print(f"Error al guardar admin que aceptó usuario: {e}")
             return False
+        
     def save_rental(self, user_id, movie_id):
         """ Guardar un alquiler en la base de datos """
         self.create_connection()
@@ -194,11 +202,37 @@ class DbManager:
             print(f"Error al rechazar usuario: {e}")
             return False
         
+    def register_Review(self, user_id, movie_id, rating, comment):
+        """ Guardar una reseña en la base de datos """
+        self.create_connection()
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute("INSERT INTO Reseñas VALUES (?, ?, ?, ?)", (user_id, movie_id, rating, comment))
+            cursor.execute("UPDATE Películas SET notaPromedio = (SELECT AVG(rating) FROM Reseñas WHERE movie_id = ?) WHERE movie_id = ? ;", (movie_id, movie_id))
+            self.conn.commit()
+            return True
+        except sqlite3.IntegrityError as e:
+            print(f"Error al guardar la reseña: {e}")
+            return False
+
+    def modify_Review(self, user_id, movie_id, rating, comment):
+        """ Actualizar una reseña en la base de datos """
+        self.create_connection()
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute("UPDATE Reseñas SET rating = ?, comment = ? WHERE user_id = ? AND movie_id = ? ;", (rating, comment, user_id, movie_id))
+            cursor.execute("UPDATE Películas SET notaPromedio = (SELECT AVG(rating) FROM Reseñas WHERE movie_id = ?) WHERE movie_id = ? ;", (movie_id, movie_id))
+            self.conn.commit()
+            return True
+        except sqlite3.IntegrityError as e:
+            print(f"Error al actualizar la reseña: {e}")
+            return False
 
     def create_tables(self):
         """ Crear las tablas necesarias en la base de datos """
         cursor = self.conn.cursor()
         # Crear las tablas
+        
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS Usuarios (
                 user_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -211,6 +245,10 @@ class DbManager:
                 FOREIGN KEY("idAdmin") REFERENCES "Usuarios"("user_id")
             );
         ''')
+        
+        #cursor.execute('''
+        #    DROP TABLE IF EXISTS Películas;
+        #''')
 
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS Películas (
@@ -225,6 +263,10 @@ class DbManager:
             );
         ''')
 
+        #cursor.execute('''
+        #    DROP TABLE IF EXISTS Alquileres;
+        #''')
+
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS Alquileres (
                 user_id INTEGER,
@@ -235,6 +277,10 @@ class DbManager:
                 FOREIGN KEY("user_id") REFERENCES "Usuarios"("user_id")
             );
         ''')
+
+        #cursor.execute('''
+        #    DROP TABLE IF EXISTS Reseñas;
+        #''')
 
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS Reseñas (
