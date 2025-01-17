@@ -141,7 +141,8 @@ class App:
             tk.Button(self.container, text="Ver mis alquileres", command=self.user_view_rentals).pack(pady=10)
             tk.Button(self.container, text="Actualizar datos personales", command=self.user_update_info).pack(pady=10)
             tk.Button(self.container, text="Solicitar película", command=self.user_request_movies).pack(pady=10)
-            tk.Button(self.container, text="Reseñar Película", command=self.user_review_movie).pack(pady=10)
+            tk.Button(self.container, text="Crear Reseña", command=self.rented_movies_without_review).pack(pady=10)
+            tk.Button(self.container, text="Modificar Reseña", command=self.rented_movies_with_review).pack(pady=10)
         # Botón para cerrar sesión
         tk.Button(self.container, text="Cerrar sesión", command=self.logout_user).pack(pady=10)
         self.container.focus_force()  # Asegura que la ventana tenga el foco
@@ -265,16 +266,19 @@ class App:
             messagebox.showerror("Error", f"Se ha caducado la reserva de:'{tituloPeli}'.")
         self.user_view_rentals()
         self.container.focus_force()  # Asegura que la ventana tenga el foco
-
     
-    def user_review_movie(self, page=1):
+    def rented_movies_without_review(self, page=1):
         """Función del usuario para reseñar peliculas alquiladas"""
         self.clear_frame()
-        tk.Label(self.container, text="Películas alquiladas").pack(pady=10)
+        # Limpiamos el contenedor de visualizar reseñas en caso de volver de crear/modificar reseña
+        if hasattr(self, 'reviews_container'):
+            self.reviews_container.destroy()  # Elimina los widgets en el contenedor
+            del self.reviews_container  # Elimina la referencia al contenedor
+        tk.Label(self.container, text="Películas Alquiladas Sin Reseñar").pack(pady=10)
         # Número de películas a mostrar por página
         items_per_page = 5
         #Obtener todas las películas alquiladas
-        alquileres = self.alquiler_manager.view_rented_movies(self.logged_in_user) # Supongamos que esta función devuelve una lista de diccionarios con las películas
+        alquileres = self.general_manager.rented_movies_without_review(self.logged_in_user)
         total_movies = len(alquileres)
          # Calcular el rango de peliculas a mostrar en esta página
         start_index = (page - 1) * items_per_page
@@ -287,29 +291,24 @@ class App:
             tk.Label(self.container, text="No hay películas para reseñar", font=("Arial", 14)).pack(pady=5)
         else:
             for alquiler in movies_to_show:
-                peli = next((m for m in self.movie_manager.movieList if m.title == alquiler.movie_id), None)
+                peli = next((m for m in self.movie_manager.movieList if m.title == alquiler.get_title()), None)
                 movie_frame = tk.Frame(self.container)
                 movie_frame.pack(pady=5, fill="x")
                 movie_label = tk.Label(movie_frame, text=f"'{peli.title}' , {peli.nota_promedio}", font=("Arial", 12))
                 movie_label.pack(side="left", padx=10)
                 # Botón para reseñar pelicula
-                existing_review = self.review_manager.get_review(self.logged_in_user, peli.title)
-                if existing_review:
-                    review_button = tk.Button(movie_frame, text="Modificar Reseña", bg="grey", command=lambda movie=peli: self.modify_review(movie.title))
-                    review_button.pack(side="right", padx=10)
-                else:
-                    review_button = tk.Button(movie_frame, text="Crear Reseña", bg="grey", command=lambda movie=peli: self.add_review(movie.title))
-                    review_button.pack(side="right", padx=10)
+                review_button = tk.Button(movie_frame, text="Crear Reseña", bg="grey", command=lambda movie=peli: self.add_review(movie.title))
+                review_button.pack(side="right", padx=10)
         # Navegación entre páginas
         nav_frame = tk.Frame(self.container)
         nav_frame.pack(pady=10)
          # Botón "Anterior" (sólo mostrar si no estamos en la primera página)
         if page > 1:
-            previous_button = tk.Button(nav_frame, text="Anterior", bg="grey", command=lambda: self.user_review_movie(page-1))
+            previous_button = tk.Button(nav_frame, text="Anterior", bg="grey", command=lambda: self.rented_movies_without_review(page-1))
             previous_button.pack(side="left", padx=5)
         # Botón "Siguiente" (sólo mostrar si hay más usuarios que mostrar)
         if end_index < total_movies:
-            next_button = tk.Button(nav_frame, text="Siguiente", bg="grey", command=lambda: self.user_review_movie(page+1))
+            next_button = tk.Button(nav_frame, text="Siguiente", bg="grey", command=lambda: self.rented_movies_without_review(page+1))
             next_button.pack(side="right", padx=5) 
         # Botón para volver al menú principal (siempre visible)
         tk.Button(self.container, text="Volver", command=lambda: self.show_user_menu("user")).pack(pady=10)
@@ -320,7 +319,7 @@ class App:
         """Función para añadir una reseña"""
         # Solicitar al usuario que ingrese el texto de la reseña
         self.clear_frame()  # Limpiar el marco de la interfaz de usuario antes de mostrar nuevos elementos
-        tk.Label(self.container, text="Añadir Reseña").pack(pady=10)
+        tk.Label(self.container, text="Añadir Reseña:", font=("Arial", 11, "bold")).pack(pady=5)
         # Crear y mostrar un campo de entrada para la calificación
         tk.Label(self.container, text="Calificación (1-10):").pack()
         rating_entry = tk.Entry(self.container)
@@ -350,15 +349,63 @@ class App:
             try:
                 self.general_manager.register_Review(self.logged_in_user, movie_id, rating, comment)
                 messagebox.showinfo("Éxito", "Reseña añadida correctamente.")
-                self.user_review_movie()  # Volver a la lista de peliculas a reseñar
+                self.rented_movies_without_review()  # Volver a la lista de peliculas a reseñar
             except Exception as e:
                 messagebox.showerror("Error", f"No se pudo guardar la reseña: {e}")
         # Conectar el botón de guardar al evento de guardar reseña
         save_button.config(command=save_review)
+        # Mostrar reseñas de otros usuarios
+        self.show_others_reviews(movie_id)
         # Botón para volver al menú anterior
-        tk.Button(self.container, text="Volver", command=self.user_review_movie).pack(pady=10)
+        tk.Button(self.container, text="Volver", command=self.rented_movies_without_review).pack(pady=10)
 
-
+    def rented_movies_with_review(self, page=1):
+        """Función del usuario para modificar reseñas de peliculas alquiladas"""
+        self.clear_frame()
+        # Limpiamos el contenedor de visualizar reseñas en caso de volver de crear/modificar reseña
+        if hasattr(self, 'reviews_container'):
+            self.reviews_container.destroy()  # Elimina los widgets en el contenedor
+            del self.reviews_container  # Elimina la referencia al contenedor
+        tk.Label(self.container, text="Películas Alquiladas Con Reseña").pack(pady=10)
+        # Número de películas a mostrar por página
+        items_per_page = 5
+        #Obtener todas las películas alquiladas
+        alquileres = self.general_manager.rented_movies_with_review(self.logged_in_user)
+        total_movies = len(alquileres)
+         # Calcular el rango de peliculas a mostrar en esta página
+        start_index = (page - 1) * items_per_page
+        end_index = start_index + items_per_page
+        movies_to_show = alquileres[start_index:end_index]  # Acceso a la lista de películas
+        # Etiqueta del título
+        tk.Label(self.container, text="Peliculas alquiladas", font=("Arial", 14)).pack(pady=10)
+        # Mostrar las peliculas de la página actual
+        if not movies_to_show:
+            tk.Label(self.container, text="No hay películas para reseñar", font=("Arial", 14)).pack(pady=5)
+        else:
+            for alquiler in movies_to_show:
+                peli = next((m for m in self.movie_manager.movieList if m.title == alquiler.get_title()), None)
+                movie_frame = tk.Frame(self.container)
+                movie_frame.pack(pady=5, fill="x")
+                movie_label = tk.Label(movie_frame, text=f"'{peli.title}' , {peli.nota_promedio}", font=("Arial", 12))
+                movie_label.pack(side="left", padx=10)
+                # Botón para reseñar pelicula
+                review_button = tk.Button(movie_frame, text="Modificar Reseña", bg="grey", command=lambda movie=peli: self.modify_review(movie.title))
+                review_button.pack(side="right", padx=10)
+        # Navegación entre páginas
+        nav_frame = tk.Frame(self.container)
+        nav_frame.pack(pady=10)
+         # Botón "Anterior" (sólo mostrar si no estamos en la primera página)
+        if page > 1:
+            previous_button = tk.Button(nav_frame, text="Anterior", bg="grey", command=lambda: self.rented_movies_with_review(page-1))
+            previous_button.pack(side="left", padx=5)
+        # Botón "Siguiente" (sólo mostrar si hay más usuarios que mostrar)
+        if end_index < total_movies:
+            next_button = tk.Button(nav_frame, text="Siguiente", bg="grey", command=lambda: self.rented_movies_with_review(page+1))
+            next_button.pack(side="right", padx=5) 
+        # Botón para volver al menú principal (siempre visible)
+        tk.Button(self.container, text="Volver", command=lambda: self.show_user_menu("user")).pack(pady=10)
+        self.container.focus_force()  # Asegura que la ventana tenga el foco
+   
     def modify_review(self, movie_id):
         """Función para modificar una reseña existente"""
         # Limpiar el marco antes de mostrar nuevos elementos
@@ -367,7 +414,7 @@ class App:
         review = self.general_manager.get_review_for_movie(self.logged_in_user, movie_id)
         if not review:
             messagebox.showerror("Error", "No se encontró la reseña a modificar.")
-            self.user_review_movie()
+            self.rented_movies_with_review()
             return
         # Mostrar la cabecera para modificar la reseña
         tk.Label(self.container, text="Modificar Reseña").pack(pady=10)
@@ -406,62 +453,86 @@ class App:
                 # Llamar a modify_review para actualizar la reseña en la base de datos
                 self.general_manager.modify_Review(self.logged_in_user, movie_id, rating, comment)
                 messagebox.showinfo("Éxito", "Reseña actualizada correctamente.")
-                self.user_review_movie()  # Volver a la lista de alquileres
+                self.rented_movies_with_review()  # Volver a la lista de alquileres
             except Exception as e:
                 messagebox.showerror("Error", f"No se pudo actualizar la reseña: {e}")
         # Conectar el botón de guardar al evento de guardar reseña
         save_button.config(command=save_review)
+        # Mostrar reseñas de otros usuarios
+        self.show_others_reviews(movie_id)
         # Botón para volver al menú anterior
-        tk.Button(self.container, text="Volver", command=self.user_review_movie).pack(pady=10)
+        tk.Button(self.container, text="Volver", command=self.rented_movies_with_review).pack(pady=10)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def show_others_reviews(self, movie_id):
+        
+    def show_others_reviews(self, movie_id, page=1):
         """Mostrar las reseñas de otros usuarios para una película específica"""
-        self.clear_frame()
-        tk.Label(self.container, text="Reseñas de Otros Usuarios").pack(pady=10)
-
+         # Limpiar el contenedor de reseñas antes de mostrar nuevas reseñas
+        if hasattr(self, 'reviews_container'):
+            for widget in self.reviews_container.winfo_children():
+                widget.destroy()
+        # Obtener todas las reseñas de peliculas alquiladas por otros usuarios
+        other_reviews = self.general_manager.get_others_reviews_for_movie(movie_id, self.logged_in_user)
+        # Si no hay un contenedor de reseñas de otros usuarios, créalo
+        if not hasattr(self, 'reviews_container'):
+            self.reviews_container = tk.Frame(self.container)
+            self.reviews_container.pack(pady=10, fill="x")
+        tk.Label(self.reviews_container, text="Reseñas de otros usuarios:", font=("Arial", 11, "bold")).pack(pady=5)
         # Obtener las reseñas de otros usuarios
-        other_reviews = self.review_manager.get_all_reviews_of_a_movie(movie_id, self.logged_in_user)
-
         if other_reviews:
-            for user, rating, comment in other_reviews:
-                tk.Label(self.container, text=f"Usuario: {user} - Calificación: {rating}", font=("Arial", 10, "bold")).pack(anchor="w", padx=10, pady=2)
-                tk.Label(self.container, text=f"Comentario: {comment}", wraplength=400, justify="left").pack(anchor="w", padx=20, pady=2)
+            total_reviews = len(other_reviews)
+            # Número de reseñas a mostrar por página
+            items_per_page = 1
+            # Calcular el rango de reseñas a mostrar en esta página
+            start_index = (page - 1) * items_per_page
+            end_index = start_index + items_per_page
+            reviews_to_show = other_reviews[start_index:end_index]  # Acceso a la lista de reseñas
+            for review in reviews_to_show:
+                # Crear un marco para cada reseña
+                review_frame = tk.Frame(self.reviews_container, padx=10, pady=10, relief="solid", borderwidth=1)
+                review_frame.pack(pady=5, fill="x")
+                # Crear un sub-marco para los títulos y valores en la misma fila
+                user_frame = tk.Frame(review_frame)
+                user_frame.pack(fill="x", pady=2)
+                # Título de usuario en negrita y valor de usuario en la misma fila
+                user_label = tk.Label(user_frame, text="Usuario:", font=("Arial", 10, "bold"), fg="black")
+                user_label.pack(side="left")
+                user_value = tk.Label(user_frame, text=review.get_user_id(), font=("Arial", 10), fg="black")
+                user_value.pack(side="left", padx=10)
+                # Crear un sub-marco para puntuación
+                rating_frame = tk.Frame(review_frame)
+                rating_frame.pack(fill="x", pady=2)
+                # Título de puntuación en negrita y valor de puntuación en la misma fila
+                rating_label = tk.Label(rating_frame, text="Puntuación:", font=("Arial", 10, "bold"), fg="black")
+                rating_label.pack(side="left")
+                rating_value = tk.Label(rating_frame, text=f"{review.get_movie_rating()} / 10", font=("Arial", 10), fg="black")
+                rating_value.pack(side="left", padx=10)
+                # Título de comentario en negrita
+                comment_label = tk.Label(review_frame, text="Comentario:", font=("Arial", 10, "bold"), fg="black")
+                comment_label.pack(anchor="w")
+                # Valor del comentario en texto normal
+                comment_value = tk.Label(review_frame, text=review.get_movie_comment(), wraplength=400, justify="left", font=("Arial", 10), fg="black")
+                comment_value.pack(anchor="w")
+             # Navegación entre páginas
+            nav_frame = tk.Frame(self.reviews_container)
+            nav_frame.pack(pady=10)
+            # Botón "Anterior" (sólo mostrar si no estamos en la primera página)
+            if page > 1:
+                previous_button = tk.Button(nav_frame, text="Anterior", bg="grey", command=lambda: self.show_others_reviews(movie_id, page-1))
+                previous_button.pack(side="left", padx=5)
+            # Botón "Siguiente" (sólo mostrar si hay más usuarios que mostrar)
+            if end_index < total_reviews:
+                next_button = tk.Button(nav_frame, text="Siguiente", bg="grey", command=lambda: self.show_others_reviews(movie_id, page+1))
+                next_button.pack(side="right", padx=5) 
         else:
-            tk.Label(self.container, text="No hay reseñas de otros usuarios para esta película.", fg="gray").pack(pady=10)
+        # Si no hay otras reseñas, mostrar un mensaje debajo del botón de volver
+            tk.Label(self.reviews_container, text="Aún no hay reseñas de otros usuarios para esta película.", font=("Arial", 10, "italic"), fg="gray").pack(pady=5)
+        
 
-        # Botón para volver al menú anterior
-        tk.Button(self.container, text="Volver", command=self.user_view_rentals).pack(pady=10)
+
+
+
+
+
 
     def user_update_info(self):
         """Función del usuario para actualizar su información personal"""

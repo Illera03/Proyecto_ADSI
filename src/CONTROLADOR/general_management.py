@@ -196,6 +196,45 @@ class GeneralManager:
         review_manager = ReviewManager()
         return review_manager.get_review(user_id, movie_id)
     
+    def rented_movies_without_review(self, user_id):
+        """Obtener las peliculas sin reseña alquiladas por el usuario"""
+        movie_manager = MovieManager()
+        review_manager = ReviewManager()
+        alquiler_manager = AlquilerManager()
+        # Obtener las películas alquiladas por el usuario
+        rented_movies = alquiler_manager.get_rented_movies(user_id)
+        # Filtramos las películas alquiladas que no tienen reseña
+        movies_without_review = []
+        for alquiler in rented_movies:
+            # Buscamos la película en el MovieManager
+            movie = next((m for m in movie_manager.movieList if m.title == alquiler.movie_id), None)
+            # Si la película no tiene reseña
+            if movie and not review_manager.get_review(user_id, movie.title):
+                movies_without_review.append(movie)
+        
+        # Devolvemos las películas que no tienen reseña
+        return movies_without_review
+
+    def rented_movies_with_review(self, user_id):
+        """Obtener las peliculas con reseña alquiladas por el usuario"""
+        movie_manager = MovieManager()
+        review_manager = ReviewManager()
+        alquiler_manager = AlquilerManager()
+        # Obtener las películas alquiladas por el usuario
+        rented_movies = alquiler_manager.get_rented_movies(user_id)
+        # Filtramos las películas alquiladas que tienen reseña
+        movies_with_review = []
+        for alquiler in rented_movies:
+            # Buscamos la película en el MovieManager
+            movie = next((m for m in movie_manager.movieList if m.title == alquiler.movie_id), None)
+            # Si la película tiene reseña
+            if movie and review_manager.get_review(user_id, movie.title):
+                movies_with_review.append(movie)
+        
+        # Devolvemos las películas que no tienen reseña
+        return movies_with_review
+
+
     def register_Review(self, user_id, movie_id, rating, comment):
         review_manager = ReviewManager()
         bien = review_manager.add_review(user_id, movie_id, rating, comment)
@@ -232,5 +271,8 @@ class GeneralManager:
             print("Error al actualizar reseña.")
             return False
     
-  
+    def get_others_reviews_for_movie(self, movie_id, user_id):
+        """Obtiene las reseñas de otros usuarios para una película"""
+        review_manager = ReviewManager()
+        return review_manager.get_others_reviews_for_movie(movie_id, user_id)
     ###-------------------------------------------------------------------------------------###

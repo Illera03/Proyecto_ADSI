@@ -63,3 +63,7 @@ class ReviewManager:
                 print(f"No se encontró la película con ID {movie_id}")
         else:
             print("No hay reseñas para esta película.")
+
+    def get_others_reviews_for_movie(self, movie_id, user_id):
+        """Recupera las reseñas de otros usuarios para una película """
+        return [review for review in self.review_list if review.get_movie_id() == movie_id and review.get_user_id() != user_id]
