@@ -213,7 +213,7 @@ class App:
         # Número de películas a mostrar por página
         items_per_page = 5
         #Obtener todas las películas alquiladas
-        movies = self.alquiler_manager.view_rented_movies(self.logged_in_user) # Supongamos que esta función devuelve una lista de diccionarios con las películas
+        movies = self.alquiler_manager.get_rented_movies(self.logged_in_user) # Supongamos que esta función devuelve una lista de diccionarios con las películas
         total_movies = len(movies)
          # Calcular el rango de peliculas a mostrar en esta página
         start_index = (page - 1) * items_per_page
@@ -294,7 +294,7 @@ class App:
                 peli = next((m for m in self.movie_manager.movieList if m.title == alquiler.get_title()), None)
                 movie_frame = tk.Frame(self.container)
                 movie_frame.pack(pady=5, fill="x")
-                movie_label = tk.Label(movie_frame, text=f"'{peli.title}' , {peli.nota_promedio}", font=("Arial", 12))
+                movie_label = tk.Label(movie_frame, text=f"Título : {peli.title} --> Puntuación : {peli.nota_promedio}", font=("Arial", 12))
                 movie_label.pack(side="left", padx=10)
                 # Botón para reseñar pelicula
                 review_button = tk.Button(movie_frame, text="Crear Reseña", bg="grey", command=lambda movie=peli: self.add_review(movie.title))
@@ -333,7 +333,7 @@ class App:
         save_button.pack(pady=10)
         def validate_review(event=None):
             """Habilitar el botón si ambos campos son válidos"""
-            rating = float(rating_entry.get().strip())
+            rating = round(float(rating_entry.get().strip()),2)
             comment = comment_text.get("1.0", "end-1c").strip()
             if 1.0 <= rating <= 10.0 and comment:
                 save_button.config(state=tk.NORMAL)
@@ -344,7 +344,7 @@ class App:
         comment_text.bind("<KeyRelease>", validate_review)
         def save_review():
             """Guardar la reseña en la base de datos"""
-            rating = float(rating_entry.get().strip())  # Extraer calificación
+            rating = round(float(rating_entry.get().strip()),2)  # Extraer calificación
             comment = comment_text.get("1.0", "end-1c").strip()  # Extraer comentario
             try:
                 self.general_manager.register_Review(self.logged_in_user, movie_id, rating, comment)
@@ -386,7 +386,7 @@ class App:
                 peli = next((m for m in self.movie_manager.movieList if m.title == alquiler.get_title()), None)
                 movie_frame = tk.Frame(self.container)
                 movie_frame.pack(pady=5, fill="x")
-                movie_label = tk.Label(movie_frame, text=f"'{peli.title}' , {peli.nota_promedio}", font=("Arial", 12))
+                movie_label = tk.Label(movie_frame, text=f"Título : {peli.title} --> Puntuación : {peli.nota_promedio}", font=("Arial", 12))           
                 movie_label.pack(side="left", padx=10)
                 # Botón para reseñar pelicula
                 review_button = tk.Button(movie_frame, text="Modificar Reseña", bg="grey", command=lambda movie=peli: self.modify_review(movie.title))
@@ -434,7 +434,7 @@ class App:
         # Función para habilitar o deshabilitar el botón de guardar dependiendo de la validez de los campos
         def validate_review(event=None):
             """Habilitar el botón si ambos campos son válidos"""
-            rating = float(rating_entry.get().strip())
+            rating = round(float(rating_entry.get().strip()),2)
             comment = comment_text.get("1.0", "end-1c").strip()
             if 1.0 <= float(rating) <= 10.0 and comment:
                 save_button.config(state=tk.NORMAL)
@@ -446,7 +446,7 @@ class App:
         # Función para guardar la reseña modificada en la base de datos
         def save_review():
             """Guardar la reseña modificada en la base de datos"""
-            rating = float(rating_entry.get().strip())  # Extraer calificación
+            rating = round(float(rating_entry.get().strip()),2)  # Extraer calificación
             comment = comment_text.get("1.0", "end-1c").strip()  # Extraer comentario
             print(f"Rating: {rating}, Comment: {comment}")  # Verifica los valores
             try:
@@ -464,7 +464,7 @@ class App:
         tk.Button(self.container, text="Volver", command=self.rented_movies_with_review).pack(pady=10)
 
         
-    def show_others_reviews(self, movie_id, page=1):
+    def show_others_reviews(self, movie_id, page=1, sort_by_rating=False):
         """Mostrar las reseñas de otros usuarios para una película específica"""
          # Limpiar el contenedor de reseñas antes de mostrar nuevas reseñas
         if hasattr(self, 'reviews_container'):
@@ -479,9 +479,15 @@ class App:
         tk.Label(self.reviews_container, text="Reseñas de otros usuarios:", font=("Arial", 11, "bold")).pack(pady=5)
         # Obtener las reseñas de otros usuarios
         if other_reviews:
-            total_reviews = len(other_reviews)
+            if sort_by_rating:
+                other_reviews.sort(key=lambda r: r.get_movie_rating(), reverse=True)
+                sort_button = tk.Button(self.reviews_container, text="Ordenar por defecto", bg="grey", command=lambda: self.show_others_reviews(movie_id, page=1, sort_by_rating=False))
+            else:
+                sort_button = tk.Button(self.reviews_container, text="Ordenar por Valoracion", bg="grey", command=lambda: self.show_others_reviews(movie_id, page=1, sort_by_rating=True)) 
+            sort_button.pack(pady=5, anchor="center")  # Asegura que el botón esté debajo del título y alineado correctamente
+            total_reviews = len(other_reviews)  
             # Número de reseñas a mostrar por página
-            items_per_page = 1
+            items_per_page = 2
             # Calcular el rango de reseñas a mostrar en esta página
             start_index = (page - 1) * items_per_page
             end_index = start_index + items_per_page
@@ -517,11 +523,11 @@ class App:
             nav_frame.pack(pady=10)
             # Botón "Anterior" (sólo mostrar si no estamos en la primera página)
             if page > 1:
-                previous_button = tk.Button(nav_frame, text="Anterior", bg="grey", command=lambda: self.show_others_reviews(movie_id, page-1))
+                previous_button = tk.Button(nav_frame, text="Anterior", bg="grey", command=lambda: self.show_others_reviews(movie_id, page-1,sort_by_rating))
                 previous_button.pack(side="left", padx=5)
             # Botón "Siguiente" (sólo mostrar si hay más usuarios que mostrar)
             if end_index < total_reviews:
-                next_button = tk.Button(nav_frame, text="Siguiente", bg="grey", command=lambda: self.show_others_reviews(movie_id, page+1))
+                next_button = tk.Button(nav_frame, text="Siguiente", bg="grey", command=lambda: self.show_others_reviews(movie_id, page+1,sort_by_rating))
                 next_button.pack(side="right", padx=5) 
         else:
         # Si no hay otras reseñas, mostrar un mensaje debajo del botón de volver

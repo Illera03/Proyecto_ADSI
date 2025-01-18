@@ -208,7 +208,7 @@ class DbManager:
         cursor = self.conn.cursor()
         try:
             cursor.execute("INSERT INTO Reseñas VALUES (?, ?, ?, ?)", (user_id, movie_id, rating, comment))
-            cursor.execute("UPDATE Películas SET notaPromedio = (SELECT AVG(rating) FROM Reseñas WHERE movie_id = ?) WHERE movie_id = ? ;", (movie_id, movie_id))
+            cursor.execute("UPDATE Películas SET notaPromedio = (SELECT ROUND(AVG(rating),2) FROM Reseñas WHERE movie_id = ?) WHERE movie_id = ? ;", (movie_id, movie_id))
             self.conn.commit()
             return True
         except sqlite3.IntegrityError as e:
@@ -221,7 +221,7 @@ class DbManager:
         cursor = self.conn.cursor()
         try:
             cursor.execute("UPDATE Reseñas SET rating = ?, comment = ? WHERE user_id = ? AND movie_id = ? ;", (rating, comment, user_id, movie_id))
-            cursor.execute("UPDATE Películas SET notaPromedio = (SELECT AVG(rating) FROM Reseñas WHERE movie_id = ?) WHERE movie_id = ? ;", (movie_id, movie_id))
+            cursor.execute("UPDATE Películas SET notaPromedio = (SELECT ROUND(AVG(rating),2) FROM Reseñas WHERE movie_id = ?) WHERE movie_id = ? ;", (movie_id, movie_id))
             self.conn.commit()
             return True
         except sqlite3.IntegrityError as e:
@@ -246,9 +246,9 @@ class DbManager:
             );
         ''')
         
-        #cursor.execute('''
-        #    DROP TABLE IF EXISTS Películas;
-        #''')
+        cursor.execute('''
+            DROP TABLE IF EXISTS Películas;
+        ''')
 
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS Películas (

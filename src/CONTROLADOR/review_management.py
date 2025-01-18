@@ -57,8 +57,8 @@ class ReviewManager:
                 total_rating = sum(r.get_movie_rating() for r in movie_reviews)
                 average_rating = total_rating / len(movie_reviews)
                 # Actualizar el promedio de la pelicula
-                movie.nota_promedio = average_rating
-                print(f"Promedio actualizado para '{movie.title}': {average_rating}")
+                movie.nota_promedio = round(average_rating,2)
+                print(f"Promedio actualizado para '{movie.title}': {movie.nota_promedio}")
             else:
                 print(f"No se encontró la película con ID {movie_id}")
         else:
