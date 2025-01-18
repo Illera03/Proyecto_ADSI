@@ -33,10 +33,6 @@ class App:
         # Inicializar GeneralManager
         self.general_manager = GeneralManager()
 
-        # Variables para almacenar el estado del usuario
-        #self.logged_in_user = None
-        #self.logged_in_role = None
-
         # Crear contenedor principal
         self.container = tk.Frame(self.master)
         self.container.pack()
@@ -115,7 +111,6 @@ class App:
             self.container.focus_force()  # Asegura que la ventana tenga el foco
         else:
             messagebox.showinfo("Éxito", f"Inicio de sesión exitoso. Rol: " + ("admin" if resul == 1 else "user"))
-            #! mal self.logged_in_user = username
             if resul == 1:
                 self.show_user_menu("admin")  # Enseñar el menú de administrador
             else:
@@ -160,6 +155,8 @@ class App:
         """Función del usuario para alquilar las películas disponibles"""
         self.clear_frame()
         tk.Label(self.container, text="Películas disponibles").pack(pady=10)
+        
+        logged_user = self.general_manager.get_logged_user()
         # Número de películas a mostrar por página
         items_per_page = 5
         #Obtener todas las películas
@@ -179,7 +176,7 @@ class App:
                 movie_label = tk.Label(self.container, text=f"{movie.title}", font=("Arial", 12))
                 movie_label.pack(pady=5)
              # Botón alquilar la película
-                rent_button = tk.Button(self.container, text="Alquilar", bg="grey", command=lambda movie=movie: self.rent_movie(self.logged_in_user, movie.title))
+                rent_button = tk.Button(self.container, text="Alquilar", bg="grey", command=lambda movie=movie: self.rent_movie(logged_user, movie.title))
                 rent_button.pack(pady=2)
         # Navegación entre páginas
         nav_frame = tk.Frame(self.container)
@@ -209,10 +206,12 @@ class App:
         """Función del usuario para ver sus alquileres"""
         self.clear_frame()
         tk.Label(self.container, text="Películas disponibles").pack(pady=10)
+        
+        logged_user = self.general_manager.get_logged_user()
         # Número de películas a mostrar por página
         items_per_page = 5
         #Obtener todas las películas alquiladas
-        movies = self.alquiler_manager.get_rented_movies(self.logged_in_user) # Supongamos que esta función devuelve una lista de diccionarios con las películas
+        movies = self.alquiler_manager.get_rented_movies(logged_user) # Supongamos que esta función devuelve una lista de diccionarios con las películas
         total_movies = len(movies)
          # Calcular el rango de peliculas a mostrar en esta página
         start_index = (page - 1) * items_per_page
@@ -230,7 +229,7 @@ class App:
                 movie_label = tk.Label(movie_frame, text=f"'{movie.movie_id}'", font=("Arial", 12))
                 movie_label.pack(side="left", padx=10)  # Coloca el nombre de la película a la izquierda
                 # Botón ver la película
-                rent_button = tk.Button(movie_frame, text="Ver", bg="grey", command=lambda movie=movie: self.view_movie(self.logged_in_user, movie.movie_id))
+                rent_button = tk.Button(movie_frame, text="Ver", bg="grey", command=lambda movie=movie: self.view_movie(logged_user, movie.movie_id))
                 rent_button.pack(side="right", padx=10)  # Coloca el botón a la derecha
         
         # Navegación entre páginas
@@ -269,6 +268,7 @@ class App:
     def rented_movies_without_review(self, page=1):
         """Función del usuario para reseñar peliculas alquiladas"""
         self.clear_frame()
+        logged_user = self.general_manager.get_logged_user()
         # Limpiamos el contenedor de visualizar reseñas en caso de volver de crear/modificar reseña
         if hasattr(self, 'reviews_container'):
             self.reviews_container.destroy()  # Elimina los widgets en el contenedor
@@ -277,7 +277,7 @@ class App:
         # Número de películas a mostrar por página
         items_per_page = 5
         #Obtener todas las películas alquiladas
-        alquileres = self.general_manager.rented_movies_without_review(self.logged_in_user)
+        alquileres = self.general_manager.rented_movies_without_review(logged_user)
         total_movies = len(alquileres)
          # Calcular el rango de peliculas a mostrar en esta página
         start_index = (page - 1) * items_per_page
@@ -336,15 +336,16 @@ class App:
     
     def save_review(self, movie_id, rating_entry, comment_text, modify=False):
             """Guardar la reseña"""
+            logged_user = self.general_manager.get_logged_user()
             rating = round(float(rating_entry.get().strip()),2)  # Extraer calificación
             comment = comment_text.get("1.0", "end-1c").strip()  # Extraer comentario
             try:
                 if modify: # para modificar reseña existente
-                    self.general_manager.modify_Review(self.logged_in_user, movie_id, rating, comment)
+                    self.general_manager.modify_Review(logged_user, movie_id, rating, comment)
                     messagebox.showinfo("Éxito", "Reseña actualizada correctamente.")
                     self.rented_movies_with_review()  # Volver a la lista de alquileres
                 else: # para crear reseña nueva
-                    self.general_manager.register_Review(self.logged_in_user, movie_id, rating, comment)
+                    self.general_manager.register_Review(logged_user, movie_id, rating, comment)
                     messagebox.showinfo("Éxito", "Reseña añadida correctamente.")
                     self.rented_movies_without_review()  # Volver a la lista de peliculas a reseñar
             except Exception as e:
@@ -379,6 +380,7 @@ class App:
     def rented_movies_with_review(self, page=1):
         """Función del usuario para modificar reseñas de peliculas alquiladas"""
         self.clear_frame()
+        logged_user = self.general_manager.get_logged_user()
         # Limpiamos el contenedor de visualizar reseñas en caso de volver de crear/modificar reseña
         if hasattr(self, 'reviews_container'):
             self.reviews_container.destroy()  # Elimina los widgets en el contenedor
@@ -387,7 +389,7 @@ class App:
         # Número de películas a mostrar por página
         items_per_page = 5
         #Obtener todas las películas alquiladas
-        alquileres = self.general_manager.rented_movies_with_review(self.logged_in_user)
+        alquileres = self.general_manager.rented_movies_with_review(logged_user)
         total_movies = len(alquileres)
          # Calcular el rango de peliculas a mostrar en esta página
         start_index = (page - 1) * items_per_page
@@ -425,10 +427,11 @@ class App:
    
     def modify_review(self, movie_id):
         """Función para modificar una reseña existente"""
+        logged_user = self.general_manager.get_logged_user()
         # Limpiar el marco antes de mostrar nuevos elementos
         self.clear_frame()
         # Obtener la reseña actual del usuario para la película seleccionada
-        review = self.general_manager.get_review_for_movie(self.logged_in_user, movie_id)
+        review = self.general_manager.get_review_for_movie(logged_user, movie_id)
         if not review:
             messagebox.showerror("Error", "No se encontró la reseña a modificar.")
             self.rented_movies_with_review()
@@ -462,11 +465,12 @@ class App:
     def show_others_reviews(self, movie_id, page=1, sort_by_rating=False):
         """Mostrar las reseñas de otros usuarios para una película específica"""
          # Limpiar el contenedor de reseñas antes de mostrar nuevas reseñas
+        logged_user = self.general_manager.get_logged_user()
         if hasattr(self, 'reviews_container'):
             for widget in self.reviews_container.winfo_children():
                 widget.destroy()
         # Obtener todas las reseñas de peliculas alquiladas por otros usuarios
-        other_reviews = self.general_manager.get_others_reviews_for_movie(movie_id, self.logged_in_user)
+        other_reviews = self.general_manager.get_others_reviews_for_movie(movie_id, logged_user)
         # Si no hay un contenedor de reseñas de otros usuarios, créalo
         if not hasattr(self, 'reviews_container'):
             self.reviews_container = tk.Frame(self.container)

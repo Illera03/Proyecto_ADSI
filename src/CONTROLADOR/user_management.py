@@ -155,6 +155,10 @@ class UserManager:
             print(user_info)
             print("---------------------------------------------------------------------------------------------------------------------------------")
     
+    def get_logged_user(self):
+        """Obtener el usuario actualmente logueado"""
+        return self.current_user
+    
     #Métodos para pruebas
     
     def exists_user(self, username):

@@ -276,3 +276,7 @@ class GeneralManager:
         review_manager = ReviewManager()
         return review_manager.get_others_reviews_for_movie(movie_id, user_id)
     ###-------------------------------------------------------------------------------------###
+    
+    def get_logged_user(self):
+        user_manager = UserManager()
+        return user_manager.get_logged_user()
