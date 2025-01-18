@@ -67,3 +67,11 @@ class ReviewManager:
     def get_others_reviews_for_movie(self, movie_id, user_id):
         """Recupera las reseñas de otros usuarios para una película """
         return [review for review in self.review_list if review.get_movie_id() == movie_id and review.get_user_id() != user_id]
+    
+    def delete_review(self, username, movie):
+        """Eliminar una reseña de un usuario sobre una pelicula."""
+        for r in self.review_list:
+            if r.get_user_id()==username and r.get_movie_id()==movie :
+                self.review_list.remove(r)
+                return True
+        return False

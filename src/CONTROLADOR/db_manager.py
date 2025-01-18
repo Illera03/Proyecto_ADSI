@@ -361,3 +361,33 @@ class DbManager:
             return False
         finally:
             cursor.close() 
+
+    def delete_review(self, username, movie):
+        """Eliminar una reseña de un usuario sobre una pelicula."""
+        conn = self.create_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("DELETE FROM Reseñas WHERE user_id = ? AND movie_id = ?", (username, movie))
+            conn.commit()
+            print(f"Reseña de {username} sobre la pelicula {movie} eliminada")
+            return True
+        except sqlite3.OperationalError as e:
+            print(f"Error al eliminar la reseña: {e}")
+            return False
+        finally:
+            cursor.close() 
+
+    def get_review(self, username, movie):
+        """Obtener una reseña de un usuario sobre una pelicula."""
+        conn = self.create_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("SELECT * FROM Reseñas WHERE user_id = ? AND movie_id = ?", (username, movie))
+            conn.commit()
+            print(f"Reseña de {username} sobre la pelicula {movie} encontrada")
+            return True
+        except sqlite3.OperationalError as e:
+            print(f"Error al encontrar la reseña: {e}")
+            return False
+        finally:
+            cursor.close() 
