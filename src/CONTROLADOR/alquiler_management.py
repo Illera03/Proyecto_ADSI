@@ -20,11 +20,6 @@ class AlquilerManager:
         self.alquileres.append(new_rent)  # Agregamos el alquiler a la lista
         return True
 
-    def view_rented_movies(self, user_id):
-        """Devuelve la lista de alquileres de un usuario en concreto"""
-        user_rentals = [alquiler for alquiler in self.alquileres if alquiler.user_id == user_id]
-        return user_rentals
-
     def add_alquiler_from_bd(self, user_id, movie_id, date):
         """Añadir un nuevo alquiler a la lista de alquileres desde la base de datos."""
         for a in self.alquileres:
@@ -64,6 +59,18 @@ class AlquilerManager:
             if a.esUserYMovie(user_id, movie_id):
                 return True
         return False
-
-                
     
+    def borrarAlquiler(self, user_id, movie_id):
+        for a in self.alquileres:
+            if a.esUserYMovie(user_id, movie_id):
+                self.alquileres.remove(a)
+                return True  # Indica que se borró con éxito
+        return False  # Indica que no se encontró el alquiler
+    
+    def get_rented_movies(self, user_id):
+        """Obtiene todas las películas alquiladas por un usuario específico"""
+        rented_movies = []
+        for alquiler in self.alquileres:
+            if alquiler.user_id == user_id:
+                rented_movies.append(alquiler)  # Añadimos el alquiler a la lista
+        return rented_movies
