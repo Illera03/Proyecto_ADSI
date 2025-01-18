@@ -321,7 +321,7 @@ class App:
         self.clear_frame()  # Limpiar el marco de la interfaz de usuario antes de mostrar nuevos elementos
         tk.Label(self.container, text="Añadir Reseña:", font=("Arial", 11, "bold")).pack(pady=5)
         # Crear y mostrar un campo de entrada para la calificación
-        tk.Label(self.container, text="Calificación (1-10):").pack()
+        tk.Label(self.container, text="Calificación (1.0 - 10.0) :").pack()
         rating_entry = tk.Entry(self.container)
         rating_entry.pack(pady=5) 
         # Crear y mostrar un campo de entrada para el comentario
@@ -333,11 +333,23 @@ class App:
         save_button.pack(pady=10)
         def validate_review(event=None):
             """Habilitar el botón si ambos campos son válidos"""
-            rating = round(float(rating_entry.get().strip()),2)
+            rating_text = rating_entry.get().strip()
             comment = comment_text.get("1.0", "end-1c").strip()
-            if 1.0 <= rating <= 10.0 and comment:
-                save_button.config(state=tk.NORMAL)
-            else:
+            try:
+                if rating_text:  # Si no está vacío
+                    rating = round(float(rating_text), 2)  # Intentar convertirlo a flotante
+                    if 1.0 <= rating <= 10.0:
+                        if comment:
+                            save_button.config(state=tk.NORMAL)
+                        else:
+                            save_button.config(state=tk.DISABLED)
+                    else:
+                        save_button.config(state=tk.DISABLED)
+                        messagebox.showerror("Error", "La calificacion debe estar entre 1.0 y 10.0")
+                else:
+                    save_button.config(state=tk.DISABLED)
+            except ValueError:
+                messagebox.showerror("Error", "Debe introducir un número valido.")
                 save_button.config(state=tk.DISABLED)
         # Asociar validación dinámica a los eventos de los widgets
         rating_entry.bind("<KeyRelease>", validate_review)
@@ -434,11 +446,23 @@ class App:
         # Función para habilitar o deshabilitar el botón de guardar dependiendo de la validez de los campos
         def validate_review(event=None):
             """Habilitar el botón si ambos campos son válidos"""
-            rating = round(float(rating_entry.get().strip()),2)
+            rating_text = rating_entry.get().strip()
             comment = comment_text.get("1.0", "end-1c").strip()
-            if 1.0 <= float(rating) <= 10.0 and comment:
-                save_button.config(state=tk.NORMAL)
-            else:
+            try:
+                if rating_text:  # Si no está vacío
+                    rating = round(float(rating_text), 2)  # Intentar convertirlo a flotante
+                    if 1.0 <= rating <= 10.0:
+                        if comment:
+                            save_button.config(state=tk.NORMAL)
+                        else:
+                            save_button.config(state=tk.DISABLED)
+                    else:
+                        save_button.config(state=tk.DISABLED)
+                        messagebox.showerror("Error", "La calificacion debe estar entre 1.0 y 10.0")
+                else:
+                    save_button.config(state=tk.DISABLED)
+            except ValueError:
+                messagebox.showerror("Error", "Debe introducir un número valido.")
                 save_button.config(state=tk.DISABLED)
         # Asociar validación dinámica a los eventos de los widgets
         rating_entry.bind("<KeyRelease>", validate_review)
