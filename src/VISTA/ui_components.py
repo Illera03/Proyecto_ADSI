@@ -34,8 +34,8 @@ class App:
         self.general_manager = GeneralManager()
 
         # Variables para almacenar el estado del usuario
-        self.logged_in_user = None
-        self.logged_in_role = None
+        #self.logged_in_user = None
+        #self.logged_in_role = None
 
         # Crear contenedor principal
         self.container = tk.Frame(self.master)
@@ -115,7 +115,7 @@ class App:
             self.container.focus_force()  # Asegura que la ventana tenga el foco
         else:
             messagebox.showinfo("Éxito", f"Inicio de sesión exitoso. Rol: " + ("admin" if resul == 1 else "user"))
-            self.logged_in_user = username
+            #! mal self.logged_in_user = username
             if resul == 1:
                 self.show_user_menu("admin")  # Enseñar el menú de administrador
             else:
@@ -620,8 +620,6 @@ class App:
 
     def logout_user(self):
         """Cerrar sesión"""
-        self.logged_in_user = None
-        self.logged_in_role = None
         messagebox.showinfo("Cerrar sesión", "Has cerrado sesión")
         self.create_main_buttons()
         self.container.focus_force()  # Asegura que la ventana tenga el foco
