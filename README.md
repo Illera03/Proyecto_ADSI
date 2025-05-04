@@ -4,7 +4,7 @@ Este proyecto es una aplicación de escritorio para la gestión de un videoclub.
 
 Tecnologías utilizadas: Python + Tkinter y SQLite
 
-API utilizada: https://www.omdbapi.com/?apikey=2d79f0e&
+API utilizada: https://www.omdbapi.com/
 
 ## Estructura del Proyecto
 
